@@ -31,10 +31,11 @@ describe "Items API" do
   end
 
   it 'can get one item by its ID' do 
-    id = create(:item).id 
-    id2 = create(:item).id 
+    merchant = create(:merchant)
+    id = create(:item, merchant_id: merchant.id).id 
+    id2 = create(:item, merchant_id: merchant.id).id 
 
-    get "/api/v1/items/#{id}"
+    get "/api/v1/merchants/#{merchant.id}/items/#{id}"
 
     item = JSON.parse(response.body, symbolize_names: true)
 
@@ -47,4 +48,6 @@ describe "Items API" do
     expect(item).to have_key(:name)
     expect(item[:name]).to be_a String 
   end
+
+  
 end 

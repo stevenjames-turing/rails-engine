@@ -1,5 +1,5 @@
 class Api::V1::ItemsController < ApplicationController
-  before_action :find_item, only: [:show]
+  before_action :find_item_and_merchant, only: [:show]
   # before_action :find_merchant, only: [:index]
 
   def index
@@ -20,7 +20,8 @@ class Api::V1::ItemsController < ApplicationController
       @merchant = Merchant.find(params[:merchant_id])
     end
 
-    def find_item
+    def find_item_and_merchant
       @item = Item.find(params[:id])
+      @merchant = Merchant.find(params[:merchant_id])
     end
 end
