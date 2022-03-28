@@ -85,5 +85,16 @@ describe "Items API" do
     expect(item.name).to eq("Ethiopia Limu Gera")
   end
 
-  
+  it 'can destroy a item' do 
+    merchant = create(:merchant)
+    item = create(:item, merchant_id: merchant.id)
+
+    expect(Item.count).to eq(1) 
+
+    delete "/api/v1/merchants/#{merchant.id}/items/#{item.id}"
+
+    expect(response).to be_successful
+    expect(Item.count).to eq(0)
+    expect{Item.find(item.id)}.to raise_error(ActiveRecord::RecordNotFound)
+  end
 end 
