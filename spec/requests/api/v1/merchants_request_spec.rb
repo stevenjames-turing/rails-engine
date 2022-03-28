@@ -53,9 +53,10 @@ describe "Merchants API" do
 
     expect(response).to be_successful
     
-    expect(Items.count).to eq(3)
-    expect(merchant_items).to eq(2)
-    expect(merchant_items).to eq([item1, item2])
+    expect(Item.count).to eq(3)
+    expect(merchant_items.count).to eq(2)
+    expect(merchant_items.first[:id]).to eq(item1.id)
+    expect(merchant_items.last[:id]).to eq(item2.id)
 
     merchant_items.each do |item| 
       expect(item).to have_key(:id)
@@ -73,11 +74,5 @@ describe "Merchants API" do
       expect(item).to have_key(:unit_price)
       expect(item[:unit_price]).to be_a Float
     end
-
-    expect(merchant).to have_key(:id)
-    expect(merchant[:id]).to eq(merchant1.id)
-    
-    expect(merchant).to have_key(:name)
-    expect(merchant[:name]).to be_a String 
-  end
+  end 
 end
