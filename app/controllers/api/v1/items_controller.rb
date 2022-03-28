@@ -1,4 +1,5 @@
 class Api::V1::ItemsController < ApplicationController
+  before_action :find_item, only: [:show]
   # before_action :find_merchant, only: [:index]
 
   def index
@@ -10,8 +11,16 @@ class Api::V1::ItemsController < ApplicationController
     end
   end
 
+  def show 
+    render json: @item
+  end
+
   private 
     def find_merchant 
       @merchant = Merchant.find(params[:merchant_id])
+    end
+
+    def find_item
+      @item = Item.find(params[:id])
     end
 end
