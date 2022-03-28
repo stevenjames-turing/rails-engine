@@ -31,11 +31,10 @@ describe "Items API" do
   end
 
   it 'can get one item by its ID' do 
-    merchant = create(:merchant)
-    id = create(:item, merchant_id: merchant.id).id 
-    id2 = create(:item, merchant_id: merchant.id).id 
+    id = create(:item).id 
+    id2 = create(:item).id 
 
-    get "/api/v1/merchants/#{merchant.id}/items/#{id}"
+    get "/api/v1/items/#{id}"
 
     item = JSON.parse(response.body, symbolize_names: true)
 
@@ -59,7 +58,7 @@ describe "Items API" do
                   })
     headers = {"CONTENT_TYPE" => "application/json"}
 
-    post "/api/v1/merchants/#{merchant.id}/items", headers: headers, params: JSON.generate(item: item_params)
+    post "/api/v1/items", headers: headers, params: JSON.generate(item: item_params)
     created_item = Item.last
 
     expect(response).to be_successful
@@ -70,14 +69,13 @@ describe "Items API" do
   end
 
   it 'can update an existing item' do 
-    merchant = create(:merchant)
-    id = create(:item, merchant_id: merchant.id).id
+    id = create(:item).id
     previous_name = Item.last.name 
     item_params = { name: "Ethiopia Limu Gera" }
     headers = {"CONTENT_TYPE" => "application/json"}
 
     # We include this header to make sure that these params are passed as JSON rather than as plain text
-    patch "/api/v1/merchants/#{merchant.id}/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
+    patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
     item = Item.find_by(id: id)
 
     expect(response).to be_successful
@@ -86,12 +84,11 @@ describe "Items API" do
   end
 
   it 'can destroy a item' do 
-    merchant = create(:merchant)
-    item = create(:item, merchant_id: merchant.id)
+    item = create(:item)
 
     expect(Item.count).to eq(1) 
 
-    delete "/api/v1/merchants/#{merchant.id}/items/#{item.id}"
+    delete "/api/v1/items/#{item.id}"
 
     expect(response).to be_successful
     expect(Item.count).to eq(0)
