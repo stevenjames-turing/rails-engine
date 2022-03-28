@@ -15,5 +15,4 @@ class Api::V1::MerchantsController < ApplicationController
       @merchant = Merchant.find(params[:id])
     end
 
-  
 end
