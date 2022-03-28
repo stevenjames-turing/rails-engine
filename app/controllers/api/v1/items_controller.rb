@@ -1,5 +1,5 @@
 class Api::V1::ItemsController < ApplicationController
-  before_action :find_item_and_merchant, only: [:show, :update]
+  before_action :find_item_and_merchant, only: [:show, :update, :destroy]
   # before_action :find_merchant, only: [:index]
 
   def index
@@ -21,6 +21,10 @@ class Api::V1::ItemsController < ApplicationController
 
   def update 
     render json: @item.update(item_params)
+  end
+
+  def destroy
+    render json: @item.destroy
   end
 
   private 
