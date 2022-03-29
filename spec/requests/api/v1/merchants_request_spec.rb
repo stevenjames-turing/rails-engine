@@ -127,5 +127,16 @@ describe "Merchants API" do
         expect(item[:unit_price]).to be_a Float
       end
     end 
+
+    it 'returns a status 404 if merchant is not found' do 
+      merchant = create(:merchant, id: 1)
+      
+      item1 = create(:item, merchant_id: merchant.id)
+      item2 = create(:item, merchant_id: merchant.id)
+      
+      get "/api/v1/merchants/28/items"
+      
+      expect(response).to have_http_status(404)
+    end
   end
 end
