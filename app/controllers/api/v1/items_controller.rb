@@ -1,31 +1,30 @@
 class Api::V1::ItemsController < ApplicationController
-  before_action :find_item, only: [:show, :update, :destroy]
-  # before_action :find_merchant, only: [:index]
+  before_action :find_item, only: [:show, :destroy]
+  before_action :find_item_and_merchant, only: [:update]
 
   def index
-    if params[:merchant_id]
-      find_merchant
-      render json: ItemSerializer.new(@merchant.items)
-    else 
-      render json: ItemSerializer.new(Item.all)
-    end
+    json_response(ItemSerializer.new(Item.all, {fields: {}}))
   end
 
   def show 
-    json_response(@item)
+    json_response(ItemSerializer.new(@item))
   end
 
   def create
     item = Item.new(item_params)
     if item.save
-      json_response(item, :created)
+      json_response(ItemSerializer.new(item), :created)
     else 
       render json: "Error, invalid input."
     end
   end
 
   def update 
-    render json: @item.update(item_params)
+    if @item.update(item_params)
+      json_response(ItemSerializer.new(@item))
+    else 
+      json_response(ItemSerializer.new(@item), :not_found)
+    end
   end
 
   def destroy
@@ -43,5 +42,10 @@ class Api::V1::ItemsController < ApplicationController
 
     def find_item
       @item = Item.find(params[:id])
+    end
+
+    def find_item_and_merchant
+      @item = Item.find(params[:id])
+      @merchant = Merchant.find(@item.merchant_id)
     end
 end
