@@ -121,12 +121,12 @@ describe "Items API" do
 
   context 'Items#create' do 
     it 'can create a new item' do 
-      merchant = create(:merchant)
+      merchant = create(:merchant, id: 14)
       item_params = ({
-                      merchant_id: merchant.id, 
-                      name: 'Ethiopia Limu Gera', 
-                      description: 'Single origin coffee', 
-                      unit_price: 12.99, 
+                      "name": "value1",
+                      "description": "value2",
+                      "unit_price": 100.99,
+                      "merchant_id": 14
                     })
       headers = {"CONTENT_TYPE" => "application/json"}
   
@@ -134,6 +134,32 @@ describe "Items API" do
       created_item = Item.last
   
       expect(response).to be_successful
+      expect(created_item.merchant_id).to eq(item_params[:merchant_id])
+      expect(created_item.name).to eq(item_params[:name])
+      expect(created_item.description).to eq(item_params[:description])
+      expect(created_item.unit_price).to eq(item_params[:unit_price])
+    end
+    xit 'returns an error if any attribute is missing' do 
+
+    end
+    it 'ignores any attributes sent by user that are not allowed' do 
+      merchant = create(:merchant)
+      item_params = ({
+                      merchant_id: merchant.id, 
+                      name: 'Ethiopia Limu Gera', 
+                      description: 'Single origin coffee', 
+                      unit_price: 12.99, 
+                      variety: "Heirloom Ethiopian", 
+                      region: "Djimma"
+                    })
+      headers = {"CONTENT_TYPE" => "application/json"}
+  
+      post "/api/v1/items", headers: headers, params: JSON.generate(item: item_params)
+
+      created_item = Item.last
+      expect(response).to be_successful
+      expect{created_item.variety}.to raise_error(NoMethodError)
+      expect{created_item.region}.to raise_error(NoMethodError)
       expect(created_item.merchant_id).to eq(item_params[:merchant_id])
       expect(created_item.name).to eq(item_params[:name])
       expect(created_item.description).to eq(item_params[:description])
