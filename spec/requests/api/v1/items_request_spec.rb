@@ -237,7 +237,7 @@ describe "Items API" do
       delete "/api/v1/items/#{item.id}"
 
       expect(response.body).to eq("") 
-      expect(response.status).to eq(204)
+      expect(response).to have_http_status(204)
     end
   end
 
@@ -262,6 +262,16 @@ describe "Items API" do
       expect(item_merchant).to have_key(:name)
       expect(item_merchant[:name]).to eq(merchant1.name)
       expect(item_merchant[:name]).to be_a String 
+    end
+
+    it 'returns a status 404 if item is not found' do 
+      merchant = create(:merchant, id: 1)
+  
+      item = create(:item, merchant_id: merchant.id, id: 1)
+      
+      get "/api/v1/items/28/merchants"
+      
+      expect(response).to have_http_status(404)
     end
   end
 end 
