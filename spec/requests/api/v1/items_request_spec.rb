@@ -195,7 +195,25 @@ describe "Items API" do
       expect(item.name).to eq("Ethiopia Limu Gera")
     end
 
-    
+    it 'can update 2 or more attributes of an existing item' do 
+      id = create(:item).id
+      previous_name = Item.last.name 
+      previous_description = Item.last.description
+      item_params = { 
+                      name: "Ethiopia Limu Gera",
+                      description: 'Single origin coffee'}
+      headers = {"CONTENT_TYPE" => "application/json"}
+  
+      patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
+      item = Item.find_by(id: id)
+  
+      expect(response).to be_successful
+      expect(item.name).to_not eq(previous_name)
+      expect(item.name).to eq("Ethiopia Limu Gera")
+
+      expect(item.description).to_not eq(previous_description)
+      expect(item.description).to eq('Single origin coffee')
+    end
   end
 
   context 'Items#destroy' do 
