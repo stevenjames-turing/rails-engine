@@ -95,7 +95,7 @@ describe "Items API" do
   end
 
   context 'Items#show' do
-    xit 'can get one item by its ID' do 
+    it 'can get one item by its ID' do 
       id = create(:item).id 
       id2 = create(:item).id 
 
@@ -105,22 +105,22 @@ describe "Items API" do
 
       expect(response).to be_successful
       
-      expect(item).to have_key(:id)
-      expect(item[:id]).to be_an Integer
-      expect(item[:id]).to eq(id)
-      expect(item[:id]).to_not eq(id2)
+      expect(item[:data]).to have_key(:id)
+      expect(item[:data][:id]).to be_a String
+      expect(item[:data][:id]).to eq(id.to_s)
+      expect(item[:data][:id]).to_not eq(id2.to_s)
       
-      expect(item).to have_key(:name)
-      expect(item[:name]).to be_a String 
+      expect(item[:data][:attributes]).to have_key(:name)
+      expect(item[:data][:attributes][:name]).to be_a String 
 
-      expect(item).to have_key(:merchant_id)
-      expect(item[:merchant_id]).to be_an Integer
+      expect(item[:data][:attributes]).to have_key(:merchant_id)
+      expect(item[:data][:attributes][:merchant_id]).to be_an Integer
 
-      expect(item).to have_key(:description)
-      expect(item[:description]).to be_a String
+      expect(item[:data][:attributes]).to have_key(:description)
+      expect(item[:data][:attributes][:description]).to be_a String
 
-      expect(item).to have_key(:unit_price)
-      expect(item[:unit_price]).to be_a Float
+      expect(item[:data][:attributes]).to have_key(:unit_price)
+      expect(item[:data][:attributes][:unit_price]).to be_a Float
     end
   end
 
