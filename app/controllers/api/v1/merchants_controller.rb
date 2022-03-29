@@ -11,7 +11,7 @@ class Api::V1::MerchantsController < ApplicationController
   end
 
   def show 
-    render json: @merchant 
+    json_response(@merchant)
   end
 
   private 

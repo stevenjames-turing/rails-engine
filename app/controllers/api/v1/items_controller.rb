@@ -12,13 +12,13 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def show 
-    render json: @item
+    json_response(@item)
   end
 
   def create
     item = Item.new(item_params)
     if item.save
-      render json: item
+      json_response(item, :created)
     else 
       render json: "Error, invalid input."
     end
