@@ -256,7 +256,7 @@ describe "Items API" do
       item1 = create(:item, merchant_id: merchant1.id)
       item2 = create(:item, merchant_id: merchant2.id)
       
-      get "/api/v1/items/#{item1.id}/merchants"
+      get "/api/v1/items/#{item1.id}/merchant"
       
       item_merchant = JSON.parse(response.body, symbolize_names: true)
   
@@ -276,7 +276,7 @@ describe "Items API" do
   
       item = create(:item, merchant_id: merchant.id, id: 1)
       
-      get "/api/v1/items/28/merchants"
+      get "/api/v1/items/28/merchant"
       
       expect(response).to have_http_status(404)
     end
