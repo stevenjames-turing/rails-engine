@@ -181,13 +181,12 @@ describe "Items API" do
   end
 
   context 'Items#update' do 
-    it 'can update an existing item' do 
+    it 'can update 1 attribute of an existing item' do 
       id = create(:item).id
       previous_name = Item.last.name 
       item_params = { name: "Ethiopia Limu Gera" }
       headers = {"CONTENT_TYPE" => "application/json"}
   
-      # We include this header to make sure that these params are passed as JSON rather than as plain text
       patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
       item = Item.find_by(id: id)
   
@@ -195,6 +194,8 @@ describe "Items API" do
       expect(item.name).to_not eq(previous_name)
       expect(item.name).to eq("Ethiopia Limu Gera")
     end
+
+    
   end
 
   context 'Items#destroy' do 

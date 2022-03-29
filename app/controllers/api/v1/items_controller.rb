@@ -22,8 +22,6 @@ class Api::V1::ItemsController < ApplicationController
     else 
       render json: "Error, invalid input."
     end
-
-
   end
 
   def update 
