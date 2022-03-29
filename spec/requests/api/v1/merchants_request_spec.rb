@@ -53,6 +53,21 @@ describe "Merchants API" do
   
       expect(merchants.count).to eq(0)
     end
+
+    it 'does NOT send dependent data of the resource' do 
+      create_list(:merchant, 3)
+  
+      get '/api/v1/merchants'
+  
+      expect(response).to be_successful
+  
+      merchants = JSON.parse(response.body, symbolize_names: true)
+  
+      merchants.each do |merchant|  
+        expect(merchant.keys.count).to eq(4)
+        expect(merchant.keys).to eq([:id, :name, :created_at, :updated_at])
+      end 
+    end
   end
 
   context 'Merchants#show' do 
