@@ -125,7 +125,7 @@ describe "Items API" do
   end
 
   context 'Items#create' do 
-    xit 'can create a new item' do 
+    it 'can create a new item' do 
       merchant = create(:merchant, id: 14)
       item_params = ({
                       "name": "value1",
@@ -145,7 +145,7 @@ describe "Items API" do
       expect(created_item.unit_price).to eq(item_params[:unit_price])
     end
 
-    xit 'returns an error if any attribute is missing' do 
+    it 'returns an error if any attribute is missing' do 
       merchant = create(:merchant, id: 14)
       item_params = ({
                       "name": "value1",
@@ -160,7 +160,7 @@ describe "Items API" do
       expect(response).to be_successful
     end
 
-    xit 'ignores any attributes sent by user that are not allowed' do 
+    it 'ignores any attributes sent by user that are not allowed' do 
       merchant = create(:merchant)
       item_params = ({
                       merchant_id: merchant.id, 
