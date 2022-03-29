@@ -42,6 +42,17 @@ describe "Merchants API" do
         expect(merchant[:name]).to be_a String
       end 
     end
+
+    it 'returns an array of data even if no resources are found' do 
+      get '/api/v1/merchants'
+  
+      expect(response).to be_successful
+  
+      merchants = JSON.parse(response.body, symbolize_names: true)
+      expect(merchants).to be_an Array
+  
+      expect(merchants.count).to eq(0)
+    end
   end
 
   context 'Merchants#show' do 
