@@ -224,7 +224,7 @@ describe "Items API" do
   end
 
   context 'Items#destroy' do 
-    xit 'can destroy a item' do 
+    it 'can destroy a item' do 
       item = create(:item)
   
       expect(Item.count).to eq(1) 
@@ -236,7 +236,7 @@ describe "Items API" do
       expect{Item.find(item.id)}.to raise_error(ActiveRecord::RecordNotFound)
     end
 
-    xit 'returns no body and status 204 when item is destroyed' do 
+    it 'returns no body and status 204 when item is destroyed' do 
       item = create(:item)
   
       expect(Item.count).to eq(1) 
