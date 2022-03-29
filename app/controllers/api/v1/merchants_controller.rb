@@ -6,12 +6,12 @@ class Api::V1::MerchantsController < ApplicationController
       find_item 
       render json: @item.merchant
     else 
-      render json: Merchant.all
+      render json: MerchantSerializer.new(Merchant.all)
     end
   end
 
   def show 
-    json_response(@merchant)
+    json_response(MerchantSerializer.new(@merchant))
   end
 
   private 
