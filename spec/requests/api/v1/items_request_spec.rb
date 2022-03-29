@@ -72,6 +72,21 @@ describe "Items API" do
   
       expect(items.count).to eq(0)
     end
+
+    it 'does NOT send dependent data of the resource' do 
+      create_list(:item, 3)
+  
+      get '/api/v1/items'
+  
+      expect(response).to be_successful
+  
+      items = JSON.parse(response.body, symbolize_names: true)
+  
+      items.each do |item|
+        expect(item.keys.count).to eq(7)
+        expect(item.keys).to eq([:id, :name, :description, :unit_price, :merchant_id, :created_at, :updated_at])
+      end 
+    end
   end
 
   context 'Items#show' do
