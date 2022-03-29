@@ -249,7 +249,7 @@ describe "Items API" do
   end
 
   context 'Items/Merchants#index' do 
-    xit 'can get the merchant info for an item with item ID' do 
+    it 'can get the merchant info for an item with item ID' do 
       merchant1 = create(:merchant)
       merchant2 = create(:merchant)
       
@@ -262,16 +262,16 @@ describe "Items API" do
   
       expect(response).to be_successful
       
-      expect(item_merchant).to have_key(:id)
-      expect(item_merchant[:id]).to eq(merchant1.id)
-      expect(item_merchant[:id]).to_not eq(merchant2.id)
+      expect(item_merchant[:data]).to have_key(:id)
+      expect(item_merchant[:data][:id]).to eq(merchant1.id.to_s)
+      expect(item_merchant[:data][:id]).to_not eq(merchant2.id.to_s)
       
-      expect(item_merchant).to have_key(:name)
-      expect(item_merchant[:name]).to eq(merchant1.name)
-      expect(item_merchant[:name]).to be_a String 
+      expect(item_merchant[:data][:attributes]).to have_key(:name)
+      expect(item_merchant[:data][:attributes][:name]).to eq(merchant1.name)
+      expect(item_merchant[:data][:attributes][:name]).to be_a String 
     end
 
-    xit 'returns a status 404 if item is not found' do 
+    it 'returns a status 404 if item is not found' do 
       merchant = create(:merchant, id: 1)
   
       item = create(:item, merchant_id: merchant.id, id: 1)
