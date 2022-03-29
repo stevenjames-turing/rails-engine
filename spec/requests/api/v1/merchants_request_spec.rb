@@ -10,15 +10,14 @@ describe "Merchants API" do
       expect(response).to be_successful
   
       merchants = JSON.parse(response.body, symbolize_names: true)
+      expect(merchants[:data].count).to eq(3)
   
-      expect(merchants.count).to eq(3)
-  
-      merchants.each do |merchant|  
+      merchants[:data].each do |merchant|  
         expect(merchant).to have_key(:id)
-        expect(merchant[:id]).to be_an Integer
+        expect(merchant[:id]).to be_a String
   
-        expect(merchant).to have_key(:name)
-        expect(merchant[:name]).to be_a String 
+        expect(merchant[:attributes]).to have_key(:name)
+        expect(merchant[:attributes][:name]).to be_a String 
       end 
     end
 
@@ -30,16 +29,16 @@ describe "Merchants API" do
       expect(response).to be_successful
   
       merchants = JSON.parse(response.body, symbolize_names: true)
-      expect(merchants).to be_an Array
+      expect(merchants[:data]).to be_an Array
   
-      expect(merchants.count).to eq(1)
+      expect(merchants[:data].count).to eq(1)
   
-      merchants.each do |merchant|  
+      merchants[:data].each do |merchant|  
         expect(merchant).to have_key(:id)
-        expect(merchant[:id]).to be_an Integer
+        expect(merchant[:id]).to be_an String
   
-        expect(merchant).to have_key(:name)
-        expect(merchant[:name]).to be_a String
+        expect(merchant[:attributes]).to have_key(:name)
+        expect(merchant[:attributes][:name]).to be_a String
       end 
     end
 
@@ -49,9 +48,9 @@ describe "Merchants API" do
       expect(response).to be_successful
   
       merchants = JSON.parse(response.body, symbolize_names: true)
-      expect(merchants).to be_an Array
+      expect(merchants[:data]).to be_an Array
   
-      expect(merchants.count).to eq(0)
+      expect(merchants[:data].count).to eq(0)
     end
 
     it 'does NOT send dependent data of the resource' do 
@@ -62,10 +61,15 @@ describe "Merchants API" do
       expect(response).to be_successful
   
       merchants = JSON.parse(response.body, symbolize_names: true)
-  
-      merchants.each do |merchant|  
-        expect(merchant.keys.count).to eq(4)
-        expect(merchant.keys).to eq([:id, :name, :created_at, :updated_at])
+
+      merchants[:data].each do |merchant|  
+        expect(merchant.keys.count).to eq(3)
+        expect(merchant.keys).to eq([:id, :type, :attributes])
+        
+        expect(merchant.keys).to_not include(:relationships)
+
+        expect(merchant[:attributes].keys.count).to eq(1)
+        expect(merchant[:attributes].keys).to eq([:name])
       end 
     end
   end
@@ -81,12 +85,12 @@ describe "Merchants API" do
   
       expect(response).to be_successful
       
-      expect(merchant).to have_key(:id)
-      expect(merchant[:id]).to eq(id)
-      expect(merchant[:id]).to_not eq(id2)
+      expect(merchant[:data]).to have_key(:id)
+      expect(merchant[:data][:id]).to eq(id.to_s)
+      expect(merchant[:data][:id]).to_not eq(id2.to_s)
       
-      expect(merchant).to have_key(:name)
-      expect(merchant[:name]).to be_a String 
+      expect(merchant[:data][:attributes]).to have_key(:name)
+      expect(merchant[:data][:attributes][:name]).to be_a String 
     end
   end
 
@@ -102,29 +106,28 @@ describe "Merchants API" do
       get "/api/v1/merchants/#{merchant1.id}/items"
       
       merchant_items = JSON.parse(response.body, symbolize_names: true)
-  
       expect(response).to be_successful
-      
+
       expect(Item.count).to eq(3)
-      expect(merchant_items.count).to eq(2)
-      expect(merchant_items.first[:id]).to eq(item1.id)
-      expect(merchant_items.last[:id]).to eq(item2.id)
+      expect(merchant_items[:data].count).to eq(2)
+      expect(merchant_items[:data].first[:id]).to eq(item1.id.to_s)
+      expect(merchant_items[:data].last[:id]).to eq(item2.id.to_s)
   
-      merchant_items.each do |item| 
+      merchant_items[:data].each do |item| 
         expect(item).to have_key(:id)
-        expect(item[:id]).to be_an Integer
+        expect(item[:id]).to be_an String
   
-        expect(item).to have_key(:merchant_id)
-        expect(item[:merchant_id]).to be_an Integer
+        expect(item[:attributes]).to have_key(:merchant_id)
+        expect(item[:attributes][:merchant_id]).to be_an Integer
   
-        expect(item).to have_key(:name)
-        expect(item[:name]).to be_a String
+        expect(item[:attributes]).to have_key(:name)
+        expect(item[:attributes][:name]).to be_a String
   
-        expect(item).to have_key(:description)
-        expect(item[:description]).to be_a String
+        expect(item[:attributes]).to have_key(:description)
+        expect(item[:attributes][:description]).to be_a String
   
-        expect(item).to have_key(:unit_price)
-        expect(item[:unit_price]).to be_a Float
+        expect(item[:attributes]).to have_key(:unit_price)
+        expect(item[:attributes][:unit_price]).to be_a Float
       end
     end 
 

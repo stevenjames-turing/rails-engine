@@ -10,25 +10,25 @@ describe "Items API" do
       expect(response).to be_successful
   
       items = JSON.parse(response.body, symbolize_names: true)
-      expect(items).to be_an Array
+      expect(items[:data]).to be_an Array
   
-      expect(items.count).to eq(3)
+      expect(items[:data].count).to eq(3)
   
-      items.each do |item|  
+      items[:data].each do |item|  
         expect(item).to have_key(:id)
-        expect(item[:id]).to be_an Integer
+        expect(item[:id]).to be_a String
   
-        expect(item).to have_key(:merchant_id)
-        expect(item[:merchant_id]).to be_an Integer
+        expect(item[:attributes]).to have_key(:merchant_id)
+        expect(item[:attributes][:merchant_id]).to be_an Integer
   
-        expect(item).to have_key(:name)
-        expect(item[:name]).to be_a String
+        expect(item[:attributes]).to have_key(:name)
+        expect(item[:attributes][:name]).to be_a String
   
-        expect(item).to have_key(:description)
-        expect(item[:description]).to be_a String
+        expect(item[:attributes]).to have_key(:description)
+        expect(item[:attributes][:description]).to be_a String
   
-        expect(item).to have_key(:unit_price)
-        expect(item[:unit_price]).to be_a Float
+        expect(item[:attributes]).to have_key(:unit_price)
+        expect(item[:attributes][:unit_price]).to be_a Float
       end 
     end
 
@@ -40,25 +40,25 @@ describe "Items API" do
       expect(response).to be_successful
   
       items = JSON.parse(response.body, symbolize_names: true)
-      expect(items).to be_an Array
+      expect(items[:data]).to be_an Array
   
-      expect(items.count).to eq(1)
+      expect(items[:data].count).to eq(1)
   
-      items.each do |item|  
+      items[:data].each do |item|  
         expect(item).to have_key(:id)
-        expect(item[:id]).to be_an Integer
+        expect(item[:id]).to be_an String
   
-        expect(item).to have_key(:merchant_id)
-        expect(item[:merchant_id]).to be_an Integer
+        expect(item[:attributes]).to have_key(:merchant_id)
+        expect(item[:attributes][:merchant_id]).to be_an Integer
   
-        expect(item).to have_key(:name)
-        expect(item[:name]).to be_a String
+        expect(item[:attributes]).to have_key(:name)
+        expect(item[:attributes][:name]).to be_a String
   
-        expect(item).to have_key(:description)
-        expect(item[:description]).to be_a String
+        expect(item[:attributes]).to have_key(:description)
+        expect(item[:attributes][:description]).to be_a String
   
-        expect(item).to have_key(:unit_price)
-        expect(item[:unit_price]).to be_a Float
+        expect(item[:attributes]).to have_key(:unit_price)
+        expect(item[:attributes][:unit_price]).to be_a Float
       end 
     end
 
@@ -68,9 +68,9 @@ describe "Items API" do
       expect(response).to be_successful
   
       items = JSON.parse(response.body, symbolize_names: true)
-      expect(items).to be_an Array
+      expect(items[:data]).to be_an Array
   
-      expect(items.count).to eq(0)
+      expect(items[:data].count).to eq(0)
     end
 
     it 'does NOT send dependent data of the resource' do 
@@ -82,9 +82,14 @@ describe "Items API" do
   
       items = JSON.parse(response.body, symbolize_names: true)
   
-      items.each do |item|
-        expect(item.keys.count).to eq(7)
-        expect(item.keys).to eq([:id, :name, :description, :unit_price, :merchant_id, :created_at, :updated_at])
+      items[:data].each do |item|
+        expect(item.keys.count).to eq(3)
+        expect(item.keys).to eq([:id, :type, :attributes])
+
+        expect(item.keys).to_not include(:relationships)
+
+        expect(item[:attributes].keys.count).to eq(4)
+        expect(item[:attributes].keys).to eq([:name, :description, :unit_price, :merchant_id])
       end 
     end
   end
@@ -100,22 +105,22 @@ describe "Items API" do
 
       expect(response).to be_successful
       
-      expect(item).to have_key(:id)
-      expect(item[:id]).to be_an Integer
-      expect(item[:id]).to eq(id)
-      expect(item[:id]).to_not eq(id2)
+      expect(item[:data]).to have_key(:id)
+      expect(item[:data][:id]).to be_a String
+      expect(item[:data][:id]).to eq(id.to_s)
+      expect(item[:data][:id]).to_not eq(id2.to_s)
       
-      expect(item).to have_key(:name)
-      expect(item[:name]).to be_a String 
+      expect(item[:data][:attributes]).to have_key(:name)
+      expect(item[:data][:attributes][:name]).to be_a String 
 
-      expect(item).to have_key(:merchant_id)
-      expect(item[:merchant_id]).to be_an Integer
+      expect(item[:data][:attributes]).to have_key(:merchant_id)
+      expect(item[:data][:attributes][:merchant_id]).to be_an Integer
 
-      expect(item).to have_key(:description)
-      expect(item[:description]).to be_a String
+      expect(item[:data][:attributes]).to have_key(:description)
+      expect(item[:data][:attributes][:description]).to be_a String
 
-      expect(item).to have_key(:unit_price)
-      expect(item[:unit_price]).to be_a Float
+      expect(item[:data][:attributes]).to have_key(:unit_price)
+      expect(item[:data][:attributes][:unit_price]).to be_a Float
     end
   end
 
@@ -182,7 +187,8 @@ describe "Items API" do
 
   context 'Items#update' do 
     it 'can update 1 attribute of an existing item' do 
-      id = create(:item).id
+      merchant = create(:merchant)
+      id = create(:item, merchant_id: merchant.id).id
       previous_name = Item.last.name 
       item_params = { name: "Ethiopia Limu Gera" }
       headers = {"CONTENT_TYPE" => "application/json"}
@@ -196,17 +202,18 @@ describe "Items API" do
     end
 
     it 'can update 2 or more attributes of an existing item' do 
-      id = create(:item).id
+      merchant = create(:merchant)
+      id = create(:item, merchant_id: merchant.id).id
       previous_name = Item.last.name 
       previous_description = Item.last.description
       item_params = { 
                       name: "Ethiopia Limu Gera",
                       description: 'Single origin coffee'}
       headers = {"CONTENT_TYPE" => "application/json"}
-  
+        
       patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
       item = Item.find_by(id: id)
-  
+
       expect(response).to be_successful
       expect(item.name).to_not eq(previous_name)
       expect(item.name).to eq("Ethiopia Limu Gera")
@@ -249,19 +256,19 @@ describe "Items API" do
       item1 = create(:item, merchant_id: merchant1.id)
       item2 = create(:item, merchant_id: merchant2.id)
       
-      get "/api/v1/items/#{item1.id}/merchants"
+      get "/api/v1/items/#{item1.id}/merchant"
       
       item_merchant = JSON.parse(response.body, symbolize_names: true)
   
       expect(response).to be_successful
       
-      expect(item_merchant).to have_key(:id)
-      expect(item_merchant[:id]).to eq(merchant1.id)
-      expect(item_merchant[:id]).to_not eq(merchant2.id)
+      expect(item_merchant[:data]).to have_key(:id)
+      expect(item_merchant[:data][:id]).to eq(merchant1.id.to_s)
+      expect(item_merchant[:data][:id]).to_not eq(merchant2.id.to_s)
       
-      expect(item_merchant).to have_key(:name)
-      expect(item_merchant[:name]).to eq(merchant1.name)
-      expect(item_merchant[:name]).to be_a String 
+      expect(item_merchant[:data][:attributes]).to have_key(:name)
+      expect(item_merchant[:data][:attributes][:name]).to eq(merchant1.name)
+      expect(item_merchant[:data][:attributes][:name]).to be_a String 
     end
 
     it 'returns a status 404 if item is not found' do 
@@ -269,7 +276,7 @@ describe "Items API" do
   
       item = create(:item, merchant_id: merchant.id, id: 1)
       
-      get "/api/v1/items/28/merchants"
+      get "/api/v1/items/28/merchant"
       
       expect(response).to have_http_status(404)
     end
