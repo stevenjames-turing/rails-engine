@@ -5,9 +5,9 @@ class Api::V1::ItemsController < ApplicationController
   def index
     if params[:merchant_id]
       find_merchant
-      render json: @merchant.items
+      render json: ItemSerializer.new(@merchant.items)
     else 
-      render json: Item.all
+      render json: ItemSerializer.new(Item.all)
     end
   end
 
