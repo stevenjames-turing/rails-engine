@@ -4,9 +4,9 @@ class Api::V1::MerchantsController < ApplicationController
   def index
     if params[:item_id]
       find_item 
-      render json: @item.merchant
+      json_response(MerchantSerializer.new(@item.merchant, { params: { relationship: true } }))
     else 
-      render json: MerchantSerializer.new(Merchant.all)
+      json_response(MerchantSerializer.new(Merchant.all))
     end
   end
 
