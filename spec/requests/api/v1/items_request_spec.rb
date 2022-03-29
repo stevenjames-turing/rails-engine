@@ -228,6 +228,22 @@ describe "Items API" do
       expect(Item.count).to eq(0)
       expect{Item.find(item.id)}.to raise_error(ActiveRecord::RecordNotFound)
     end
+
+    it 'returns no body and status 204 when item is destroyed' do 
+      item = create(:item)
+  
+      expect(Item.count).to eq(1) 
+  
+      delete "/api/v1/items/#{item.id}"
+
+      expect(response.body).to eq("") 
+      expect(response.status).to eq(204)
+    end
+
+    xit 'destroys an invoice if this was the only item on invoice' do 
+
+    end
+
   end
 
   context 'Items/Merchants#index' do 
