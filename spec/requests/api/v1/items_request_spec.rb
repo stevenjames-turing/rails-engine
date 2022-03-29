@@ -63,7 +63,14 @@ describe "Items API" do
           end 
         end
         it 'returns an array of data even if no resources are found' do 
-
+          get '/api/v1/items'
+      
+          expect(response).to be_successful
+      
+          items = JSON.parse(response.body, symbolize_names: true)
+          expect(items).to be_an Array
+      
+          expect(items.count).to eq(0)
         end
       end
     end
