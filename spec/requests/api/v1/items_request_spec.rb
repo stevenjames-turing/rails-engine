@@ -139,9 +139,22 @@ describe "Items API" do
       expect(created_item.description).to eq(item_params[:description])
       expect(created_item.unit_price).to eq(item_params[:unit_price])
     end
-    xit 'returns an error if any attribute is missing' do 
 
+    it 'returns an error if any attribute is missing' do 
+      merchant = create(:merchant, id: 14)
+      item_params = ({
+                      "name": "value1",
+                      "description": "value2",
+                      "merchant_id": 14
+                    })
+      headers = {"CONTENT_TYPE" => "application/json"}
+  
+      post "/api/v1/items", headers: headers, params: JSON.generate(item: item_params)
+      
+      expect(response.body).to eq("Error, invalid input.")
+      expect(response).to be_successful
     end
+
     it 'ignores any attributes sent by user that are not allowed' do 
       merchant = create(:merchant)
       item_params = ({
