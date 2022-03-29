@@ -22,8 +22,6 @@ class Api::V1::ItemsController < ApplicationController
     else 
       render json: "Error, invalid input."
     end
-
-
   end
 
   def update 
@@ -31,7 +29,7 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def destroy
-    render json: @item.destroy
+    @item.destroy
   end
 
   private 
