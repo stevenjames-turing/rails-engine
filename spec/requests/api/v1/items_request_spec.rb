@@ -186,8 +186,9 @@ describe "Items API" do
   end
 
   context 'Items#update' do 
-    xit 'can update 1 attribute of an existing item' do 
-      id = create(:item).id
+    it 'can update 1 attribute of an existing item' do 
+      merchant = create(:merchant)
+      id = create(:item, merchant_id: merchant.id).id
       previous_name = Item.last.name 
       item_params = { name: "Ethiopia Limu Gera" }
       headers = {"CONTENT_TYPE" => "application/json"}
@@ -200,18 +201,19 @@ describe "Items API" do
       expect(item.name).to eq("Ethiopia Limu Gera")
     end
 
-    xit 'can update 2 or more attributes of an existing item' do 
-      id = create(:item).id
+    it 'can update 2 or more attributes of an existing item' do 
+      merchant = create(:merchant)
+      id = create(:item, merchant_id: merchant.id).id
       previous_name = Item.last.name 
       previous_description = Item.last.description
       item_params = { 
                       name: "Ethiopia Limu Gera",
                       description: 'Single origin coffee'}
       headers = {"CONTENT_TYPE" => "application/json"}
-  
+        
       patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({item: item_params})
       item = Item.find_by(id: id)
-  
+
       expect(response).to be_successful
       expect(item.name).to_not eq(previous_name)
       expect(item.name).to eq("Ethiopia Limu Gera")
@@ -222,7 +224,7 @@ describe "Items API" do
   end
 
   context 'Items#destroy' do 
-    it 'can destroy a item' do 
+    xit 'can destroy a item' do 
       item = create(:item)
   
       expect(Item.count).to eq(1) 
