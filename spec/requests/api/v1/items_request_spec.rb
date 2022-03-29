@@ -246,6 +246,50 @@ describe "Items API" do
       expect(response.body).to eq("") 
       expect(response).to have_http_status(204)
     end
+    
+    it 'destroys an invoice if this was the only item on invoice' do 
+      merchant = create(:merchant)
+      customer = create(:customer)
+      item = create(:item)
+      invoice = create(:invoice, merchant_id: merchant.id, customer_id: customer.id)
+      invoice_item = create(:invoice_item, invoice_id: invoice.id, item_id: item.id, unit_price: item.unit_price)
+      
+      expect(Item.count).to eq(1) 
+      expect(Invoice.count).to eq(1)
+      expect(InvoiceItem.count).to eq(1)
+
+      delete "/api/v1/items/#{item.id}"
+      
+      expect(Item.count).to eq(0)
+      expect(Invoice.count).to eq(0)
+      expect(InvoiceItem.count).to eq(0)
+      
+      expect(response.body).to eq("") 
+      expect(response).to have_http_status(204)
+    end
+    
+    it 'does NOT destroy an invoice if this was NOT the only item on invoice' do 
+      merchant = create(:merchant)
+      customer = create(:customer)
+      item1 = create(:item)
+      item2 = create(:item)
+      invoice = create(:invoice, merchant_id: merchant.id, customer_id: customer.id)
+      invoice_item = create(:invoice_item, invoice_id: invoice.id, item_id: item1.id, unit_price: item1.unit_price)
+      invoice_item = create(:invoice_item, invoice_id: invoice.id, item_id: item2.id, unit_price: item2.unit_price)
+      
+      expect(Item.count).to eq(2) 
+      expect(Invoice.count).to eq(1)
+      expect(InvoiceItem.count).to eq(2)
+      
+      delete "/api/v1/items/#{item1.id}"
+      
+      expect(Item.count).to eq(1) 
+      expect(Invoice.count).to eq(1)
+      expect(InvoiceItem.count).to eq(1)
+
+      expect(response.body).to eq("") 
+      expect(response).to have_http_status(204)
+    end
   end
 
   context 'Items/Merchants#index' do 

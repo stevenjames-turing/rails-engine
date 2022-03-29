@@ -28,7 +28,11 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def destroy
+    invoice_result = @item.valid_invoice?
     @item.destroy
+    if invoice_result != nil
+      Invoice.destroy(invoice_result[:id])
+    end
   end
 
   private 
@@ -48,4 +52,5 @@ class Api::V1::ItemsController < ApplicationController
       @item = Item.find(params[:id])
       @merchant = Merchant.find(@item.merchant_id)
     end
+  
 end
