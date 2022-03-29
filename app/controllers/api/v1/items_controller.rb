@@ -16,7 +16,14 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def create
-    render json: Item.create!(item_params)
+    item = Item.new(item_params)
+    if item.save
+      render json: item
+    else 
+      render json: "Error, invalid input."
+    end
+
+
   end
 
   def update 
