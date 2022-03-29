@@ -239,11 +239,6 @@ describe "Items API" do
       expect(response.body).to eq("") 
       expect(response.status).to eq(204)
     end
-
-    xit 'destroys an invoice if this was the only item on invoice' do 
-
-    end
-
   end
 
   context 'Items/Merchants#index' do 
