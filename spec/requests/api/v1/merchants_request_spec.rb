@@ -95,7 +95,7 @@ describe "Merchants API" do
   end
 
   context 'Merchants/Items#index' do 
-    xit 'can get all items for a given merchant' do 
+    it 'can get all items for a given merchant' do 
       merchant1 = create(:merchant)
       merchant2 = create(:merchant)
       
@@ -106,33 +106,32 @@ describe "Merchants API" do
       get "/api/v1/merchants/#{merchant1.id}/items"
       
       merchant_items = JSON.parse(response.body, symbolize_names: true)
-  
       expect(response).to be_successful
-      
+
       expect(Item.count).to eq(3)
-      expect(merchant_items.count).to eq(2)
-      expect(merchant_items.first[:id]).to eq(item1.id)
-      expect(merchant_items.last[:id]).to eq(item2.id)
+      expect(merchant_items[:data].count).to eq(2)
+      expect(merchant_items[:data].first[:id]).to eq(item1.id.to_s)
+      expect(merchant_items[:data].last[:id]).to eq(item2.id.to_s)
   
-      merchant_items.each do |item| 
+      merchant_items[:data].each do |item| 
         expect(item).to have_key(:id)
-        expect(item[:id]).to be_an Integer
+        expect(item[:id]).to be_an String
   
-        expect(item).to have_key(:merchant_id)
-        expect(item[:merchant_id]).to be_an Integer
+        expect(item[:attributes]).to have_key(:merchant_id)
+        expect(item[:attributes][:merchant_id]).to be_an Integer
   
-        expect(item).to have_key(:name)
-        expect(item[:name]).to be_a String
+        expect(item[:attributes]).to have_key(:name)
+        expect(item[:attributes][:name]).to be_a String
   
-        expect(item).to have_key(:description)
-        expect(item[:description]).to be_a String
+        expect(item[:attributes]).to have_key(:description)
+        expect(item[:attributes][:description]).to be_a String
   
-        expect(item).to have_key(:unit_price)
-        expect(item[:unit_price]).to be_a Float
+        expect(item[:attributes]).to have_key(:unit_price)
+        expect(item[:attributes][:unit_price]).to be_a Float
       end
     end 
 
-    xit 'returns a status 404 if merchant is not found' do 
+    it 'returns a status 404 if merchant is not found' do 
       merchant = create(:merchant, id: 1)
       
       item1 = create(:item, merchant_id: merchant.id)
