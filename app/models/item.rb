@@ -41,5 +41,15 @@ class Item < ApplicationRecord
     end
   end
 
+  def self.find_all_by_price(min, max)
+     if min == nil 
+      Item.where("unit_price between 0 and #{max}").order(name: :asc)
+    elsif max == nil 
+      Item.where("unit_price between #{min} and 999999").order(name: :asc)
+    else
+      Item.where("unit_price between #{min} and #{max}").order(name: :asc)
+    end
+  end
+
 
 end

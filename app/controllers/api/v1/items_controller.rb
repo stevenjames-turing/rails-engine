@@ -53,16 +53,25 @@ class Api::V1::ItemsController < ApplicationController
     if @item != nil && @item.count == 1
       json_response(ItemSerializer.new(@item[0]))
     else 
-      json_response({ data: {message: 'No matching items'}}, :bad_request)
+      json_response({"data": []}, :bad_request)
     end
   end
 
   def find_all
-    if (params[:name]) && (params[:name] != nil) && (params[:name] != "")
-      @item = Item.find_all_by_name(params[:name])
-    else 
+    if (params[:name]) && (params[:min_price])
       @item = nil 
+    elsif (params[:name]) && (params[:max_price])
+      @item = nil 
+    elsif (params[:name]) && (params[:name] != nil) && (params[:name] != "")
+      @item = Item.find_all_by_name(params[:name])
+    elsif (params[:min_price]) && (params[:max_price])
+      @item = Item.find_all_by_price(params[:min_price], params[:max_price])
+    elsif (params[:min_price])
+      @item = Item.find_all_by_price(params[:min_price], nil)
+    elsif params[:max_price]
+      @item = Item.find_all_by_price(nil, params[:max_price])
     end
+    
     if @item != nil && @item.count >= 1
       json_response(ItemSerializer.new(@item))
     else 
