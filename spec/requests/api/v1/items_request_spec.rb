@@ -357,6 +357,23 @@ describe 'Items API' do
         expect(items[:data][:attributes]).to have_key(:name)
         expect(items[:data][:attributes][:name]).to eq('Knob Creek')
       end
+
+      it 'returns even if given a partial name' do 
+        item1 = create(:item, name: "Schitt's Creek")
+        item2 = create(:item, name: 'Knob Creek')
+        get '/api/v1/items/find?name=cre'
+
+        expect(response).to be_successful
+
+        items = JSON.parse(response.body, symbolize_names: true)
+
+        expect(items.count).to eq(1)
+
+        expect(items[:data][:attributes]).to have_key(:name)
+        expect(items[:data][:attributes][:name]).to eq('Knob Creek')
+      end
+
+     
     end
 
     context 'price parameter' do
