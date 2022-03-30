@@ -22,4 +22,8 @@ class Item < ApplicationRecord
       end
     end
   end
+
+  def self.name_search(name)
+    Item.where("name ILIKE ?", "%#{name}%")
+  end
 end
