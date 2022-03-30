@@ -18,31 +18,47 @@ class Item < ApplicationRecord
     end
   end
 
-  def self.name_search(name)
-    Item.where('name ILIKE ?', "%#{name}%").order(name: :asc).limit(1)
-  end
-
-  def self.find_all_by_name(name)
-    Item.where('name ILIKE ?', "%#{name}%").order(name: :asc)
-  end
-
-  def self.price_search(min, max)
-    if min.nil?
-      Item.where("unit_price between 0 and #{max}").order(name: :asc).limit(1)
-    elsif max.nil?
-      Item.where("unit_price between #{min} and 999999").order(name: :asc).limit(1)
-    else
-      Item.where("unit_price between #{min} and #{max}").order(name: :asc).limit(1)
+  def self.search_items(data, count = nil)
+    if data[0] == "name"
+      Item.search_by_name(data[1], count)
+    elsif data[0] == "between"
+      Item.search_between_price(data[1], data[2], count)
+    elsif data[0] == "min"
+      Item.search_min_price(data[1], count)
+    elsif data[0] == "max"
+      Item.search_max_price(data[1], count)
     end
   end
 
-  def self.find_all_by_price(min, max)
-    if min.nil?
-      Item.where("unit_price between 0 and #{max}").order(name: :asc)
-    elsif max.nil?
-      Item.where("unit_price between #{min} and 999999").order(name: :asc)
-    else
+  def self.search_by_name(name, count)
+    if count.nil? 
+      Item.where('name ILIKE ?', "%#{name}%").order(name: :asc)
+    else 
+      Item.where('name ILIKE ?', "%#{name}%").order(name: :asc).limit(count)
+    end
+  end
+
+  def self.search_between_price(min, max, count)
+    if count.nil? 
       Item.where("unit_price between #{min} and #{max}").order(name: :asc)
+    else 
+      Item.where("unit_price between #{min} and #{max}").order(name: :asc).limit(1)
+    end
+  end
+  
+  def self.search_min_price(min, count)
+    if count.nil? 
+      Item.where("unit_price >= #{min}").order(name: :asc)
+    else 
+      Item.where("unit_price >= #{min}").order(name: :asc).limit(1)
+    end
+  end
+
+  def self.search_max_price(max, count)
+    if count.nil? 
+      Item.where("unit_price <= #{max}").order(name: :asc)
+    else 
+      Item.where("unit_price <= #{max}").order(name: :asc).limit(1)
     end
   end
 end
