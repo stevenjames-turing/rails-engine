@@ -358,11 +358,67 @@ describe "Items API" do
       end
     end
     context 'price parameter' do 
-      xit 'should return a single object' do 
+      context 'min_price' do 
+        it 'should return a single object' do 
+          create(:item, unit_price: 3.25)
+          create(:item, unit_price: 8.25)
+          create(:item, unit_price: 11.28)
+          create(:item, unit_price: 20, name: "Schitt's Creek")
   
+          get "/api/v1/items/find?min_price=15"
+          expect(response).to be_successful
+  
+          items = JSON.parse(response.body, symbolize_names: true)
+          expect(items.count).to eq(1)
+      
+          expect(items[:data][:attributes]).to have_key(:unit_price)
+          expect(items[:data][:attributes][:unit_price]).to eq(20)
+          expect(items[:data][:attributes]).to have_key(:name)
+          expect(items[:data][:attributes][:name]).to eq("Schitt's Creek")
+        end
+
+        xit 'should return the first object in case-sensitive alphabetical order if multiple matches are found' do 
+          create(:item, unit_price: 3.25)
+          create(:item, unit_price: 8.25)
+          create(:item, unit_price: 11.28)
+          create(:item, unit_price: 20, name: "Schitt's Creek")
+          create(:item, unit_price: 20, name: "Knob Creek")
+  
+          get "/api/v1/items/find?min_price=15"
+          expect(response).to be_successful
+  
+          items = JSON.parse(response.body, symbolize_names: true)
+          expect(items.count).to eq(1)
+      
+          expect(items[:data][:attributes]).to have_key(:unit_price)
+          expect(items[:data][:attributes][:unit_price]).to eq(20)
+          expect(items[:data][:attributes]).to have_key(:name)
+          expect(items[:data][:attributes][:name]).to eq("Knob Creek")
+        end
       end
-      xit 'should return the first object in case-sensitive alphabetical order if multiple matches are found' do 
+      context 'max_price' do 
+        xit 'should return a single object' do 
+          create(:item, unit_price: 3.25)
+          create(:item, unit_price: 8.25)
+          create(:item, unit_price: 11.28)
+          create(:item, unit_price: 2, name: "Schitt's Creek")
   
+          get "/api/v1/items/find?max_price=3"
+          expect(response).to be_successful
+  
+          items = JSON.parse(response.body, symbolize_names: true)
+          expect(items.count).to eq(1)
+      
+          expect(items[:data][:attributes]).to have_key(:unit_price)
+          expect(items[:data][:attributes][:unit_price]).to eq(2)
+
+          expect(items[:data][:attributes]).to have_key(:name)
+          expect(items[:data][:attributes][:name]).to eq("Schitt's Creek")
+        end
+
+        xit 'should return the first object in case-sensitive alphabetical order if multiple matches are found' do 
+    
+        end
       end
     end
     context 'name and price' do 
