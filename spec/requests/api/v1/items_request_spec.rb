@@ -454,11 +454,27 @@ describe "Items API" do
   end
   context 'Items#find_all' do 
     context 'name parameter' do 
-      
+      it 'should return an array of objects' do 
+        item1 = create(:item, name: "Schitt's Creek")
+        item2 = create(:item, name: "Knob Creek")
+
+        get "/api/v1/items/find_all?name=creek"
+
+        expect(response).to be_successful
+        
+        items = JSON.parse(response.body, symbolize_names: true)
+
+        expect(items.count).to eq(2)
+  
+        expect(items.first[:name]).to eq("Knob Creek")
+        expect(items.last[:name]).to eq("Schitt's Creek")
+      end
+
     end
+
     context 'price parameter' do 
       context 'min_price' do 
-      
+        
       end
 
       context 'max_price' do 
