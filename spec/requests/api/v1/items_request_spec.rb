@@ -447,13 +447,27 @@ describe "Items API" do
         create(:item, unit_price: 2, name: "Schitt's Creek")
 
         get "/api/v1/items/find?name=creek&max_price=3"
-        get "/api/v1/items/find?name=ring&min_price=50"
         
         expect(response).to have_http_status(400)
       end
     end
   end
   context 'Items#find_all' do 
+    context 'name parameter' do 
+      
+    end
+    context 'price parameter' do 
+      context 'min_price' do 
+      
+      end
 
-  end
-end 
+      context 'max_price' do 
+        
+      end
+    end
+
+    context 'name and price' do 
+     
+    end
+  end 
+end

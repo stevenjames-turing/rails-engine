@@ -37,9 +37,9 @@ class Api::V1::ItemsController < ApplicationController
 
   def find
     if (params[:name]) && (params[:min_price])
-      @item = [] 
-    elsif (params[:name]) && (params[:min_price])
-      @item = []
+      @item = nil 
+    elsif (params[:name]) && (params[:max_price])
+      @item = nil 
     elsif (params[:name]) && (params[:name] != nil) && (params[:name] != "")
       @item = Item.name_search(params[:name])
     elsif (params[:min_price]) && (params[:max_price])
