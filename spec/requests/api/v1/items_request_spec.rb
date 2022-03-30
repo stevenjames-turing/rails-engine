@@ -325,4 +325,62 @@ describe "Items API" do
       expect(response).to have_http_status(404)
     end
   end
+
+  context 'Items#find' do 
+    context 'name parameter' do 
+      it 'should return a single object' do 
+        create_list(:item, 3)
+        create(:item, name: "Schitt's Creek")
+
+        get "/api/v1/items/find?name=Creek"
+        expect(response).to be_successful
+        
+        items = JSON.parse(response.body, symbolize_names: true)
+        expect(items[:data]).to be_an Array
+    
+        expect(items[:data].count).to eq(1)
+    
+        items[:data].each do |item|  
+          expect(item).to have_key(:id)
+          expect(item[:id]).to be_a String
+    
+          expect(item[:attributes]).to have_key(:merchant_id)
+          expect(item[:attributes][:merchant_id]).to be_an Integer
+    
+          expect(item[:attributes]).to have_key(:name)
+          expect(item[:attributes][:name]).to eq("Schitt's Creek")
+
+    
+          expect(item[:attributes]).to have_key(:description)
+          expect(item[:attributes][:description]).to be_a String
+    
+          expect(item[:attributes]).to have_key(:unit_price)
+          expect(item[:attributes][:unit_price]).to be_a Float
+        end    
+      end
+
+      xit 'should return the first object in case-sensitive alphabetical order if multiple matches are found' do 
+        item1 = create(:item, name: "Schitt's Creek")
+        item2 = create(:item, name: "Knob Creek")
+        get "/api/v1/items/find?name=creek"
+        
+      end
+    end
+    context 'price parameter' do 
+      xit 'should return a single object' do 
+  
+      end
+      xit 'should return the first object in case-sensitive alphabetical order if multiple matches are found' do 
+  
+      end
+    end
+    context 'name and price' do 
+      xit 'should return an error if price and name parameters are used together' do 
+
+      end
+    end
+  end
+  context 'Items#find_all' do 
+
+  end
 end 
