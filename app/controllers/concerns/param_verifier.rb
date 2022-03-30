@@ -1,4 +1,4 @@
-module SearchHelper 
+module ParamVerifier 
   def verify_search_params(params)
     if params[:name]
       if (params[:min_price]) ||  (params[:max_price])
