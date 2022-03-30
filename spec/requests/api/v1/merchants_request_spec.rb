@@ -182,7 +182,7 @@ describe "Merchants API" do
         merchant1 = create(:merchant, name: "Schitt's Creek")
         merchant2 = create(:merchant, name: "Knob Creek")
         
-        get "/api/v1/merchants/find?name=creek"
+        get "/api/v1/merchants/find_all?name=creek"
 
         expect(response).to be_successful
         
@@ -190,8 +190,8 @@ describe "Merchants API" do
 
         expect(merchants.count).to eq(2)
 
-        expect(merchants.first.name).to eq(["Knob Creek"])
-        expect(merchants.last.name).to eq(["Schitt's Creek"])
+        expect(merchants.first[:name]).to eq("Knob Creek")
+        expect(merchants.last[:name]).to eq("Schitt's Creek")
       end
 
       xit 'should not return a 404 if no objects are found' do 

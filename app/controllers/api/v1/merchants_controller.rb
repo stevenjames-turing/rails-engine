@@ -26,6 +26,19 @@ class Api::V1::MerchantsController < ApplicationController
       json_response(@item, :bad_request)
     end
   end
+
+  def find_all
+    if (params[:name]) && (params[:name] != nil) && (params[:name] != "")
+      @item = Merchant.find_all_by_name(params[:name])
+    else 
+      @item = nil 
+    end
+    if @item != nil && @item.count >= 1
+      json_response(@item)
+    else 
+      json_response(@item, :bad_request)
+    end
+  end
   
   private 
 
