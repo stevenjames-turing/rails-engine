@@ -194,8 +194,15 @@ describe "Merchants API" do
         expect(merchants.last[:name]).to eq("Schitt's Creek")
       end
 
-      xit 'should not return a 404 if no objects are found' do 
+      it 'should not return a 404 if no objects are found' do 
+        merchant1 = create(:merchant, name: "Schitt's Creek")
+        merchant2 = create(:merchant, name: "Knob Creek")
+        
+        get "/api/v1/merchants/find_all?name=turing"
+        
+        merchants = JSON.parse(response.body, symbolize_names: true)
 
+        expect(response).to_not have_http_status(404)
       end
     end
   end 
