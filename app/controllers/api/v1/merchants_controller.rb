@@ -15,18 +15,24 @@ class Api::V1::MerchantsController < ApplicationController
   end
 
   def find
-    @item = (Merchant.name_search(params[:name]) if params[:name] && !params[:name].nil? && (params[:name] != ''))
-    if !@item.nil? && @item.count == 1
-      json_response(MerchantSerializer.new(@item[0]))
+    search_status = verify_search_params(params)
+    if search_status[0] != "invalid"
+       @merchant = Merchant.name_search(search_status, 1)
+    end 
+    if !@merchant.nil? && @merchant.count == 1
+      json_response(MerchantSerializer.new(@merchant[0]))
     else
-      json_response({ "data": { message: 'No matching items' } }, :bad_request)
+      json_response({ "data": { message: 'No matching merchant' } }, :bad_request)
     end
   end
 
   def find_all
-    @item = (Merchant.find_all_by_name(params[:name]) if params[:name] && !params[:name].nil? && (params[:name] != ''))
-    if !@item.nil? && @item.count >= 1
-      json_response(MerchantSerializer.new(@item))
+    search_status = verify_search_params(params)
+    if search_status[0] != "invalid"
+       @merchant = Merchant.name_search(search_status)
+    end 
+    if !@merchant.nil? && @merchant.count >= 1
+      json_response(MerchantSerializer.new(@merchant))
     else
       json_response({ "data": [] }, :bad_request)
     end
