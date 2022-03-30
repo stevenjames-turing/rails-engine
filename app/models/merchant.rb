@@ -9,11 +9,11 @@ class Merchant < ApplicationRecord
   has_many :customers, through: :invoices
   has_many :transactions, through: :invoices
 
-  def self.name_search(name)
-    Merchant.where('name ILIKE ?', "%#{name}%").order(name: :asc).limit(1)
-  end
-
-  def self.find_all_by_name(name)
-    Merchant.where('name ILIKE ?', "%#{name}%").order(name: :asc)
+  def self.name_search(data, count = nil)
+    if count.nil?
+      Merchant.where('name ILIKE ?', "%#{data[1]}%").order(name: :asc)
+    else 
+      Merchant.where('name ILIKE ?', "%#{data[1]}%").order(name: :asc).limit(count)
+    end
   end
 end
