@@ -23,7 +23,7 @@ class Api::V1::MerchantsController < ApplicationController
     if @item != nil && @item.count == 1
       json_response(MerchantSerializer.new(@item[0]))
     else 
-      json_response(@item, :bad_request)
+      json_response({ "data": {message: 'No matching items'}}, :bad_request)
     end
   end
 
@@ -34,9 +34,9 @@ class Api::V1::MerchantsController < ApplicationController
       @item = nil 
     end
     if @item != nil && @item.count >= 1
-      json_response(@item)
+      json_response(MerchantSerializer.new(@item))
     else 
-      json_response(@item, :bad_request)
+      json_response({"data": []}, :bad_request)
     end
   end
   
