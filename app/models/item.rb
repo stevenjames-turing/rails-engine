@@ -22,4 +22,18 @@ class Item < ApplicationRecord
       end
     end
   end
+
+  def self.name_search(name)
+    Item.where("name ILIKE ?", "%#{name}%").order(name: :asc).limit(1)
+  end
+
+  def self.price_search(min, max)
+    if min == nil 
+      Item.where("unit_price between 0 and #{max}").order(name: :asc).limit(1)
+    elsif max == nil 
+      Item.where("unit_price between #{min} and 999999").order(name: :asc).limit(1)
+    else
+      Item.where("unit_price between #{min} and #{max}").order(name: :asc).limit(1)
+    end
+  end
 end
