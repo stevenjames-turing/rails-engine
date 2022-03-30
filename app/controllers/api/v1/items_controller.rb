@@ -39,9 +39,9 @@ class Api::V1::ItemsController < ApplicationController
     item = Item.name_search(params[:name])
     
     if item.count == 1
-      json_response(ItemSerializer.new(item))
+      json_response(ItemSerializer.new(item[0]))
     else 
-      json_response(ItemSerializer.new(item), :bad_request)
+      json_response(ItemSerializer.new(item[0]), :bad_request)
     end
   end
 
