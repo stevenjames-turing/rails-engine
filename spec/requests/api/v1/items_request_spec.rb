@@ -377,7 +377,7 @@ describe "Items API" do
           expect(items[:data][:attributes][:name]).to eq("Schitt's Creek")
         end
 
-        xit 'should return the first object in case-sensitive alphabetical order if multiple matches are found' do 
+        it 'should return the first object in case-sensitive alphabetical order if multiple matches are found' do 
           create(:item, unit_price: 3.25)
           create(:item, unit_price: 8.25)
           create(:item, unit_price: 11.28)
