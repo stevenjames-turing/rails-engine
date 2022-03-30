@@ -142,4 +142,29 @@ describe "Merchants API" do
       expect(response).to have_http_status(404)
     end
   end
+
+  context 'Merchants#find' do 
+    context 'name parameter' do 
+      it 'should return a single object' do 
+        create_list(:merchant, 3)
+        create(:merchant, name: "Schitt's Creek")
+
+        get "/api/v1/merchants/find?name=Creek"
+        expect(response).to be_successful
+
+        merchants = JSON.parse(response.body, symbolize_names: true)
+        expect(merchants.count).to eq(1)
+    
+        expect(merchants[:data][:attributes]).to have_key(:name)
+        expect(merchants[:data][:attributes][:name]).to eq("Schitt's Creek")
+      end
+
+      
+    end
+  end
+  context 'Merchants#find_all' do 
+    context 'name parameter' do 
+      
+    end
+  end 
 end
