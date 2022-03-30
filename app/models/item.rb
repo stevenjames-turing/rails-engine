@@ -1,4 +1,6 @@
 class Item < ApplicationRecord
+  extend SearchHelper
+
   # Model Validations
   validates_presence_of :name,
                         :description,
@@ -27,38 +29,6 @@ class Item < ApplicationRecord
       Item.search_min_price(data[1], count)
     elsif data[0] == "max"
       Item.search_max_price(data[1], count)
-    end
-  end
-
-  def self.search_by_name(name, count)
-    if count.nil? 
-      Item.where('name ILIKE ?', "%#{name}%").order(name: :asc)
-    else 
-      Item.where('name ILIKE ?', "%#{name}%").order(name: :asc).limit(count)
-    end
-  end
-
-  def self.search_between_price(min, max, count)
-    if count.nil? 
-      Item.where("unit_price between #{min} and #{max}").order(name: :asc)
-    else 
-      Item.where("unit_price between #{min} and #{max}").order(name: :asc).limit(1)
-    end
-  end
-  
-  def self.search_min_price(min, count)
-    if count.nil? 
-      Item.where("unit_price >= #{min}").order(name: :asc)
-    else 
-      Item.where("unit_price >= #{min}").order(name: :asc).limit(1)
-    end
-  end
-
-  def self.search_max_price(max, count)
-    if count.nil? 
-      Item.where("unit_price <= #{max}").order(name: :asc)
-    else 
-      Item.where("unit_price <= #{max}").order(name: :asc).limit(1)
     end
   end
 end
