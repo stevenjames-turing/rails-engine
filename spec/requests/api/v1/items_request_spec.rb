@@ -334,7 +334,7 @@ describe "Items API" do
 
         get "/api/v1/items/find?name=Creek"
         expect(response).to be_successful
-        
+
         items = JSON.parse(response.body, symbolize_names: true)
         expect(items[:data]).to be_an Array
     
@@ -359,11 +359,25 @@ describe "Items API" do
         end    
       end
 
-      xit 'should return the first object in case-sensitive alphabetical order if multiple matches are found' do 
+      it 'should return the first object in case-sensitive alphabetical order if multiple matches are found' do 
         item1 = create(:item, name: "Schitt's Creek")
         item2 = create(:item, name: "Knob Creek")
         get "/api/v1/items/find?name=creek"
+
+        expect(response).to be_successful
         
+        items = JSON.parse(response.body, symbolize_names: true)
+        expect(items[:data]).to be_an Array
+    
+        expect(items[:data].count).to eq(1)
+    
+        items[:data].each do |item|  
+          expect(item).to have_key(:id)
+          expect(item[:id]).to eq(item2.id.to_s)
+    
+          expect(item[:attributes]).to have_key(:name)
+          expect(item[:attributes][:name]).to eq("Knob Creek")
+        end    
       end
     end
     context 'price parameter' do 
