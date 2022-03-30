@@ -17,7 +17,7 @@ class Api::V1::MerchantsController < ApplicationController
   def find
     search_status = verify_search_params(params)
     if search_status[0] != "invalid"
-       @merchant = Merchant.name_search(search_status, 1)
+       @merchant = Merchant.search_by_name(search_status[1], 1)
     end 
     if !@merchant.nil? && @merchant.count == 1
       json_response(MerchantSerializer.new(@merchant[0]))
@@ -29,7 +29,7 @@ class Api::V1::MerchantsController < ApplicationController
   def find_all
     search_status = verify_search_params(params)
     if search_status[0] != "invalid"
-       @merchant = Merchant.name_search(search_status)
+       @merchant = Merchant.search_by_name(search_status[1])
     end 
     if !@merchant.nil? && @merchant.count >= 1
       json_response(MerchantSerializer.new(@merchant))
