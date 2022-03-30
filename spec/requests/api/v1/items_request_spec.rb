@@ -122,6 +122,21 @@ describe 'Items API' do
       expect(item[:data][:attributes]).to have_key(:unit_price)
       expect(item[:data][:attributes][:unit_price]).to be_a Float
     end
+
+    it 'returns a 404 error if ID not found' do 
+      item1 = create(:item)
+      item2 = create(:item)
+
+      get "/api/v1/items/987654"
+
+      item = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response).to have_http_status(404)
+    end
+
+    xit 'returns a 404 error is string passed as ID' do 
+
+    end
   end
 
   context 'Items#create' do
