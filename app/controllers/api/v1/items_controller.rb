@@ -63,10 +63,6 @@ class Api::V1::ItemsController < ApplicationController
     params.require(:item).permit(:name, :description, :unit_price, :merchant_id)
   end
 
-  def find_merchant
-    @merchant = Merchant.find(params[:merchant_id])
-  end
-
   def find_item
     @item = Item.find(params[:id])
   end
