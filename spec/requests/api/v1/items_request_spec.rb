@@ -396,8 +396,9 @@ describe "Items API" do
           expect(items[:data][:attributes][:name]).to eq("Knob Creek")
         end
       end
+      
       context 'max_price' do 
-        xit 'should return a single object' do 
+        it 'should return a single object' do 
           create(:item, unit_price: 3.25)
           create(:item, unit_price: 8.25)
           create(:item, unit_price: 11.28)
