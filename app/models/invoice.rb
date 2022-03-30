@@ -1,8 +1,7 @@
 class Invoice < ApplicationRecord
-
   # Model Validations
   validates_presence_of :status,
-                        :customer_id, 
+                        :customer_id,
                         :merchant_id
 
   # Model Relationships

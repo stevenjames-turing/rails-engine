@@ -1,5 +1,4 @@
 class Api::V1::MerchantItemsController < ApplicationController
-
   def index
     if params[:item_id]
       find_merchant_and_item
@@ -10,15 +9,14 @@ class Api::V1::MerchantItemsController < ApplicationController
     end
   end
 
-  private 
+  private
 
-    
-    def find_merchant
-      @merchant = Merchant.find(params[:merchant_id])
-    end
+  def find_merchant
+    @merchant = Merchant.find(params[:merchant_id])
+  end
 
-    def find_merchant_and_item
-      @item = Item.find(params[:item_id])
-      @merchant = Merchant.find(@item.merchant_id)
-    end
+  def find_merchant_and_item
+    @item = Item.find(params[:item_id])
+    @merchant = Merchant.find(@item.merchant_id)
+  end
 end
