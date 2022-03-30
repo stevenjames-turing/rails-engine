@@ -188,10 +188,10 @@ describe "Merchants API" do
         
         merchants = JSON.parse(response.body, symbolize_names: true)
 
-        expect(merchants.count).to eq(2)
+        expect(merchants[:data].count).to eq(2)
 
-        expect(merchants.first[:name]).to eq("Knob Creek")
-        expect(merchants.last[:name]).to eq("Schitt's Creek")
+        expect(merchants[:data][0][:attributes][:name]).to eq("Knob Creek")
+        expect(merchants[:data][-1][:attributes][:name]).to eq("Schitt's Creek")
       end
 
       it 'should not return a 404 if no objects are found' do 

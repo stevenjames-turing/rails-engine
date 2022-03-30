@@ -464,14 +464,24 @@ describe "Items API" do
         
         items = JSON.parse(response.body, symbolize_names: true)
 
-        expect(items.count).to eq(2)
+        expect(items[:data].count).to eq(2)
   
-        expect(items.first[:name]).to eq("Knob Creek")
-        expect(items.last[:name]).to eq("Schitt's Creek")
+        expect(items[:data][0][:attributes][:name]).to eq("Knob Creek")
+        expect(items[:data][-1][:attributes][:name]).to eq("Schitt's Creek")
       end
 
-    end
+      it 'should not return a 404 if no objects are found' do 
+        item1 = create(:item, name: "Schitt's Creek")
+        item2 = create(:item, name: "Knob Creek")
 
+        get "/api/v1/items/find_all?name=turing"
+        
+        items = JSON.parse(response.body, symbolize_names: true)
+        
+        expect(response).to_not have_http_status(404)
+      end
+    end
+    
     context 'price parameter' do 
       context 'min_price' do 
         
