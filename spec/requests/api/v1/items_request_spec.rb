@@ -324,7 +324,7 @@ describe "Items API" do
       
       expect(response).to have_http_status(404)
     end
-  end
+  end 
 
   context 'Items#find' do 
     context 'name parameter' do 
@@ -357,6 +357,7 @@ describe "Items API" do
         expect(items[:data][:attributes][:name]).to eq("Knob Creek")
       end
     end
+
     context 'price parameter' do 
       context 'min_price' do 
         it 'should return a single object' do 
@@ -437,23 +438,206 @@ describe "Items API" do
           expect(items[:data][:attributes][:name]).to eq("Knob Creek")
         end
       end
+
+      context 'min and max price' do 
+         it 'should return a single object' do 
+          create(:item, unit_price: 3.25)
+          create(:item, unit_price: 8.25)
+          create(:item, unit_price: 11.28)
+          create(:item, unit_price: 2, name: "Schitt's Creek")
+  
+          get "/api/v1/items/find?min_price=1&max_price=3"
+          expect(response).to be_successful
+  
+          items = JSON.parse(response.body, symbolize_names: true)
+          expect(items.count).to eq(1)
+      
+          expect(items[:data][:attributes]).to have_key(:unit_price)
+          expect(items[:data][:attributes][:unit_price]).to eq(2)
+
+          expect(items[:data][:attributes]).to have_key(:name)
+          expect(items[:data][:attributes][:name]).to eq("Schitt's Creek")
+        end
+
+        it 'should return the first object in case-sensitive alphabetical order if multiple matches are found' do 
+          create(:item, unit_price: 3.25)
+          create(:item, unit_price: 8.25)
+          create(:item, unit_price: 11.28)
+          create(:item, unit_price: 2, name: "Schitt's Creek")
+          create(:item, unit_price: 2, name: "Knob Creek")
+
+          get "/api/v1/items/find?min_price=1&max_price=3"
+          expect(response).to be_successful
+  
+          items = JSON.parse(response.body, symbolize_names: true)
+          expect(items.count).to eq(1)
+      
+          expect(items[:data][:attributes]).to have_key(:unit_price)
+          expect(items[:data][:attributes][:unit_price]).to eq(2)
+
+          expect(items[:data][:attributes]).to have_key(:name)
+          expect(items[:data][:attributes][:name]).to eq("Knob Creek")
+        end
+      end
+
+      context 'name and price' do 
+        it 'should return an error if price and name parameters are used together' do 
+          create(:item, unit_price: 3.25)
+          create(:item, unit_price: 8.25)
+          create(:item, unit_price: 11.28)
+          create(:item, unit_price: 2, name: "Schitt's Creek")
+
+          get "/api/v1/items/find?name=creek&max_price=3"
+          
+          expect(response).to have_http_status(400)
+        end
+      end
+    end
+  end
+  
+  context 'Items#find_all' do 
+    context 'name parameter' do 
+      it 'should return an array of objects' do 
+        item1 = create(:item, name: "Schitt's Creek")
+        item2 = create(:item, name: "Knob Creek")
+
+        get "/api/v1/items/find_all?name=creek"
+
+        expect(response).to be_successful
+        
+        items = JSON.parse(response.body, symbolize_names: true)
+
+        expect(items[:data].count).to eq(2)
+  
+        expect(items[:data][0][:attributes][:name]).to eq("Knob Creek")
+        expect(items[:data][-1][:attributes][:name]).to eq("Schitt's Creek")
+      end
+
+      it 'should not return a 404 if no objects are found' do 
+        item1 = create(:item, name: "Schitt's Creek")
+        item2 = create(:item, name: "Knob Creek")
+
+        get "/api/v1/items/find_all?name=turing"
+        
+        items = JSON.parse(response.body, symbolize_names: true)
+        
+        expect(response).to_not have_http_status(404)
+      end
+    end
+    
+    context 'price parameter' do 
+      context 'min_price' do 
+        it 'should return an array of objects' do 
+          item1 = create(:item, unit_price: 3.25)
+          item2 = create(:item, unit_price: 8.25, name: "CDE Item")
+          item3 = create(:item, unit_price: 11.28, name: "BCD Item")
+          item4 = create(:item, unit_price: 20, name: "ABC Item")
+
+          get "/api/v1/items/find_all?min_price=5"
+
+          expect(response).to be_successful
+          
+          items = JSON.parse(response.body, symbolize_names: true)
+
+          expect(items[:data].count).to eq(3)
+    
+          expect(items[:data][0][:attributes][:unit_price]).to eq(20)
+          expect(items[:data][1][:attributes][:unit_price]).to eq(11.28)
+          expect(items[:data][2][:attributes][:unit_price]).to eq(8.25)
+        end
+
+        it 'should not return a 404 if no objects are found' do 
+          item1 = create(:item, unit_price: 3.25)
+          item2 = create(:item, unit_price: 8.25, name: "CDE Item")
+          item3 = create(:item, unit_price: 11.28, name: "BCD Item")
+          item4 = create(:item, unit_price: 20, name: "ABC Item")
+
+          get "/api/v1/items/find_all?min_price=25"
+          
+          items = JSON.parse(response.body, symbolize_names: true)
+          
+          expect(response).to_not have_http_status(404)
+        end
+      end
+
+      context 'max_price' do 
+        it 'should return an array of objects' do 
+          item1 = create(:item, unit_price: 3.25, name: "DEF Item")
+          item2 = create(:item, unit_price: 8.25, name: "CDE Item")
+          item3 = create(:item, unit_price: 11.28, name: "BCD Item")
+          item4 = create(:item, unit_price: 20, name: "ABC Item")
+
+          get "/api/v1/items/find_all?max_price=10"
+
+          expect(response).to be_successful
+          
+          items = JSON.parse(response.body, symbolize_names: true)
+
+          expect(items[:data].count).to eq(2)
+    
+          expect(items[:data][0][:attributes][:unit_price]).to eq(8.25)
+          expect(items[:data][1][:attributes][:unit_price]).to eq(3.25)
+        end
+
+        it 'should not return a 404 if no objects are found' do 
+          item1 = create(:item, unit_price: 3.25, name: "DEF Item")
+          item2 = create(:item, unit_price: 8.25, name: "CDE Item")
+          item3 = create(:item, unit_price: 11.28, name: "BCD Item")
+          item4 = create(:item, unit_price: 20, name: "ABC Item")
+
+          get "/api/v1/items/find_all?max_price=2"
+          
+          items = JSON.parse(response.body, symbolize_names: true)
+          
+          expect(response).to_not have_http_status(404)
+        end
+      end
+
+      context 'min and max_price' do 
+        it 'should return an array of objects' do 
+          item1 = create(:item, unit_price: 3.25, name: "DEF Item")
+          item2 = create(:item, unit_price: 8.25, name: "CDE Item")
+          item3 = create(:item, unit_price: 11.28, name: "BCD Item")
+          item4 = create(:item, unit_price: 20, name: "ABC Item")
+
+          get "/api/v1/items/find_all?min_price=2&max_price=10"
+
+          expect(response).to be_successful
+          
+          items = JSON.parse(response.body, symbolize_names: true)
+
+          expect(items[:data].count).to eq(2)
+    
+          expect(items[:data][0][:attributes][:unit_price]).to eq(8.25)
+          expect(items[:data][1][:attributes][:unit_price]).to eq(3.25)
+        end
+
+        it 'should not return a 404 if no objects are found' do 
+          item1 = create(:item, unit_price: 3.25, name: "DEF Item")
+          item2 = create(:item, unit_price: 8.25, name: "CDE Item")
+          item3 = create(:item, unit_price: 11.28, name: "BCD Item")
+          item4 = create(:item, unit_price: 20, name: "ABC Item")
+
+          get "/api/v1/items/find_all?min_price=1&max_price=2"
+          
+          items = JSON.parse(response.body, symbolize_names: true)
+          
+          expect(response).to_not have_http_status(404)
+        end
+      end
     end
 
     context 'name and price' do 
-      it 'should return an error if price and name parameters are used together' do 
+     it 'should return an error if price and name parameters are used together' do 
         create(:item, unit_price: 3.25)
         create(:item, unit_price: 8.25)
         create(:item, unit_price: 11.28)
         create(:item, unit_price: 2, name: "Schitt's Creek")
 
-        get "/api/v1/items/find?name=creek&max_price=3"
-        get "/api/v1/items/find?name=ring&min_price=50"
+        get "/api/v1/items/find_all?name=creek&max_price=3"
         
         expect(response).to have_http_status(400)
       end
     end
-  end
-  context 'Items#find_all' do 
-
-  end
+  end 
 end 

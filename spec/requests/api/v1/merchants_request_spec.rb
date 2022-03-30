@@ -142,4 +142,68 @@ describe "Merchants API" do
       expect(response).to have_http_status(404)
     end
   end
+
+  context 'Merchants#find' do 
+    context 'name parameter' do 
+      it 'should return a single object' do 
+        create_list(:merchant, 3)
+        create(:merchant, name: "Schitt's Creek")
+
+        get "/api/v1/merchants/find?name=Creek"
+        expect(response).to be_successful
+
+        merchants = JSON.parse(response.body, symbolize_names: true)
+        expect(merchants.count).to eq(1)
+    
+        expect(merchants[:data][:attributes]).to have_key(:name)
+        expect(merchants[:data][:attributes][:name]).to eq("Schitt's Creek")
+      end
+
+      it 'should return the first object in case-sensitive alphabetical order if multiple matches are found' do 
+        merchant1 = create(:merchant, name: "Schitt's Creek")
+        merchant2 = create(:merchant, name: "Knob Creek")
+        
+        get "/api/v1/merchants/find?name=creek"
+
+        expect(response).to be_successful
+        
+        merchants = JSON.parse(response.body, symbolize_names: true)
+
+        expect(merchants.count).to eq(1)
+  
+        expect(merchants[:data][:attributes]).to have_key(:name)
+        expect(merchants[:data][:attributes][:name]).to eq("Knob Creek")
+      end
+    end
+  end
+  context 'Merchants#find_all' do 
+    context 'name parameter' do 
+      it 'should return an array of objects' do 
+        merchant1 = create(:merchant, name: "Schitt's Creek")
+        merchant2 = create(:merchant, name: "Knob Creek")
+        
+        get "/api/v1/merchants/find_all?name=creek"
+
+        expect(response).to be_successful
+        
+        merchants = JSON.parse(response.body, symbolize_names: true)
+
+        expect(merchants[:data].count).to eq(2)
+
+        expect(merchants[:data][0][:attributes][:name]).to eq("Knob Creek")
+        expect(merchants[:data][-1][:attributes][:name]).to eq("Schitt's Creek")
+      end
+
+      it 'should not return a 404 if no objects are found' do 
+        merchant1 = create(:merchant, name: "Schitt's Creek")
+        merchant2 = create(:merchant, name: "Knob Creek")
+        
+        get "/api/v1/merchants/find_all?name=turing"
+        
+        merchants = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to_not have_http_status(404)
+      end
+    end
+  end 
 end
