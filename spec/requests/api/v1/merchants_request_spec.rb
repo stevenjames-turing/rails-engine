@@ -159,7 +159,21 @@ describe "Merchants API" do
         expect(merchants[:data][:attributes][:name]).to eq("Schitt's Creek")
       end
 
-      
+      it 'should return the first object in case-sensitive alphabetical order if multiple matches are found' do 
+        merchant1 = create(:merchant, name: "Schitt's Creek")
+        merchant2 = create(:merchant, name: "Knob Creek")
+        
+        get "/api/v1/merchants/find?name=creek"
+
+        expect(response).to be_successful
+        
+        merchants = JSON.parse(response.body, symbolize_names: true)
+
+        expect(merchants.count).to eq(1)
+  
+        expect(merchants[:data][:attributes]).to have_key(:name)
+        expect(merchants[:data][:attributes][:name]).to eq("Knob Creek")
+      end
     end
   end
   context 'Merchants#find_all' do 
