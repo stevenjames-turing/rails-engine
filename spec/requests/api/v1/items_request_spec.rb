@@ -438,9 +438,18 @@ describe "Items API" do
         end
       end
     end
-    context 'name and price' do 
-      xit 'should return an error if price and name parameters are used together' do 
 
+    context 'name and price' do 
+      it 'should return an error if price and name parameters are used together' do 
+        create(:item, unit_price: 3.25)
+        create(:item, unit_price: 8.25)
+        create(:item, unit_price: 11.28)
+        create(:item, unit_price: 2, name: "Schitt's Creek")
+
+        get "/api/v1/items/find?name=creek&max_price=3"
+        get "/api/v1/items/find?name=ring&min_price=50"
+        
+        expect(response).to have_http_status(400)
       end
     end
   end
