@@ -24,6 +24,6 @@ class Item < ApplicationRecord
   end
 
   def self.name_search(name)
-    Item.where("name ILIKE ?", "%#{name}%")
+    Item.where("name ILIKE ?", "%#{name}%").order(name: :asc).limit(1)
   end
 end

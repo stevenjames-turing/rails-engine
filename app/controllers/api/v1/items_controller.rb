@@ -37,7 +37,12 @@ class Api::V1::ItemsController < ApplicationController
 
   def find
     item = Item.name_search(params[:name])
-    json_response(ItemSerializer.new(item))
+    
+    if item.count == 1
+      json_response(ItemSerializer.new(item))
+    else 
+      json_response(ItemSerializer.new(item), :bad_request)
+    end
   end
 
   private 
