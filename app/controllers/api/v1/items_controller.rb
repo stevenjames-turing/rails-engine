@@ -36,19 +36,24 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def find
-    if params[:name]
+    if (params[:name]) && (params[:min_price])
+      @item = [] 
+    elsif (params[:name]) && (params[:min_price])
+      @item = []
+    elsif (params[:name]) && (params[:name] != nil) && (params[:name] != "")
       @item = Item.name_search(params[:name])
-    elsif params[:min_price] && params[:max_price]
+    elsif (params[:min_price]) && (params[:max_price])
       @item = Item.price_search(params[:min_price], params[:max_price])
-    elsif params[:min_price]
+    elsif (params[:min_price])
       @item = Item.price_search(params[:min_price], nil)
     elsif params[:max_price]
       @item = Item.price_search(nil, params[:max_price])
     end
-    if @item.count == 1
+
+    if @item != nil && @item.count == 1
       json_response(ItemSerializer.new(@item[0]))
     else 
-      json_response(ItemSerializer.new(@item[0]), :bad_request)
+      json_response(ItemSerializer.new(@item), :bad_request)
     end
   end
 
