@@ -22,6 +22,34 @@ RSpec.describe SearchHelper do
         expect(Item.search_by_name("creek")).to_not include(@item4)
       end
     end
-    
+    describe '#search_between_price(min, max, count)' do 
+      it 'searches between min and max price and returns a single object (first object in alphabetical order if multiples)' do 
+        expect(Item.search_between_price(5, 15, 1)).to eq([@item3])
+      end
+
+      it 'searches between min and max price and returns all objects' do 
+
+      end
+    end
+
+    describe '#search_min_price(min, count)' do 
+      it 'searches by minimum price and returns a single object (first object in alphabetical order if multiples)' do 
+        
+      end
+
+      it 'searches by minimum price and returns all objects' do 
+
+      end
+    end
+
+    describe '#search_max_prece(max, count)' do 
+      it 'searches by maximum price and returns a single object (first object in alphabetical order if multiples)' do 
+  
+      end
+
+      it 'searches by maximum price and returns all objects' do 
+  
+      end
+    end
   end
 end
