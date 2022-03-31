@@ -8,7 +8,7 @@ module SearchHelper
     end 
   end
 
-  def search_between_price(min, max, count)
+  def search_between_price(min, max, count = nil)
     if count.nil? 
       where("unit_price between #{min} and #{max}").order(name: :asc)
     else 
@@ -16,7 +16,7 @@ module SearchHelper
     end
   end
 
-  def search_min_price(min, count)
+  def search_min_price(min, count = nil)
     if count.nil? 
       where("unit_price >= #{min}").order(name: :asc)
     else 
@@ -24,7 +24,7 @@ module SearchHelper
     end
   end
 
-  def search_max_price(max, count)
+  def search_max_price(max, count = nil)
     if count.nil? 
       where("unit_price <= #{max}").order(name: :asc)
     else 

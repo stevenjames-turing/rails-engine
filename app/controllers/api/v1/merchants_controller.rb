@@ -2,12 +2,7 @@ class Api::V1::MerchantsController < ApplicationController
   before_action :find_merchant, only: [:show]
 
   def index
-    if params[:item_id]
-      find_item
-      json_response(MerchantSerializer.new(@item.merchant, { params: { relationship: true } }))
-    else
-      json_response(MerchantSerializer.new(Merchant.all))
-    end
+    json_response(MerchantSerializer.new(Merchant.all))
   end
 
   def show
@@ -42,9 +37,5 @@ class Api::V1::MerchantsController < ApplicationController
 
   def find_merchant
     @merchant = Merchant.find(params[:id])
-  end
-
-  def find_item
-    @item = Item.find(params[:item_id])
   end
 end
