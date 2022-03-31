@@ -17,7 +17,11 @@ RSpec.describe SearchHelper do
         expect(Merchant.search_by_name("Sierra", 1)[0].name).to eq("Sierra Nevada")
       end
 
-      
+      it 'searches by name and returns all objects' do 
+        expect(Item.search_by_name("creek")).to eq([@item3, @item1, @item2])
+        expect(Item.search_by_name("creek")).to_not include(@item4)
+      end
     end
+    
   end
 end
