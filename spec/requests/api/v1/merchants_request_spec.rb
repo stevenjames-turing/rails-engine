@@ -131,7 +131,16 @@ describe 'Merchants API' do
         expect(merchants[:data].count).to eq(15)
       end
 
-      
+      it 'returns an array of data even if no resources are found' do
+        get '/api/v1/merchants?per_page=15&page=2'
+
+        expect(response).to be_successful
+
+        merchants = JSON.parse(response.body, symbolize_names: true)
+        expect(merchants[:data]).to be_an Array
+
+        expect(merchants[:data].count).to eq(0)
+      end
     end 
   end
 
