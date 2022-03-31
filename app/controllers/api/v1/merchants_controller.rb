@@ -43,8 +43,4 @@ class Api::V1::MerchantsController < ApplicationController
   def find_merchant
     @merchant = Merchant.find(params[:id])
   end
-
-  def find_item
-    @item = Item.find(params[:item_id])
-  end
 end
