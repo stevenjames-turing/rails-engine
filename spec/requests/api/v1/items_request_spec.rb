@@ -119,9 +119,23 @@ describe 'Items API' do
 
         expect(items[:data].count).to eq(35)
       end
+      
+      it 'will return the next 20 objects if given a page number param' do 
+        create_list(:item, 50)
+  
+        get '/api/v1/items?page=1'
+        
+        first_20_items = JSON.parse(response.body, symbolize_names: true)
+        
+        get '/api/v1/items?page=2'
+        
+        next_20_items = JSON.parse(response.body, symbolize_names: true)
+  
+        expect(next_20_items[:data].count).to eq(20)
 
-      xit 'will return the next 20 objects if given a page number param' do 
-
+        next_20_items.each do |item|
+          expect(first_20_items.include?(item)).to be false
+        end
       end
 
       xit 'returns if page and per_page params are passed together' do 
