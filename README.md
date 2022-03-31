@@ -1,11 +1,15 @@
 # Rails Engine Lite
 
-### Table of Contents
-
-- About The Project
-- Getting Started
-- Built With
-- Testing
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li><a href="#about-the-project">About The Project</a></li>
+    <li><a href="#getting-started">Getting Started</a></li>
+    <li><a href="#built-with">Built With</a></li>
+    <li><a href="#testing">Testing</a></li>
+  </ol>
+</details>
 
 ## About The Project
 
