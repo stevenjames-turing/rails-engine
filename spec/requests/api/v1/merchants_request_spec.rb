@@ -92,6 +92,28 @@ describe 'Merchants API' do
       expect(merchant[:data][:attributes]).to have_key(:name)
       expect(merchant[:data][:attributes][:name]).to be_a String
     end
+
+    it 'returns a 404 error if ID not found' do 
+      id = create(:merchant).id
+      id2 = create(:merchant).id
+
+      get "/api/v1/merchants/987654321"
+
+      merchant = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response).to have_http_status(404)
+    end
+    
+    it 'returns a 404 error is string passed as ID' do 
+      id = create(:merchant).id
+      id2 = create(:merchant).id
+
+      get "/api/v1/merchants/'string'"
+
+      merchant = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response).to have_http_status(404)
+    end
   end
 
   context 'Merchants/Items#index' do
@@ -141,6 +163,17 @@ describe 'Merchants API' do
 
       expect(response).to have_http_status(404)
     end
+
+    it 'will return an error if string passed as Item ID' do 
+      merchant = create(:merchant, id: 1)
+
+      item1 = create(:item, merchant_id: merchant.id)
+      item2 = create(:item, merchant_id: merchant.id)
+
+      get "/api/v1/merchants/'string'/items"
+
+      expect(response).to have_http_status(404)
+    end
   end
 
   context 'Merchants#find' do
@@ -174,8 +207,58 @@ describe 'Merchants API' do
         expect(merchants[:data][:attributes]).to have_key(:name)
         expect(merchants[:data][:attributes][:name]).to eq('Knob Creek')
       end
+
+      it 'returns even if given a partial name' do 
+        merchant1 = create(:merchant, name: "Schitt's Creek")
+        merchant2 = create(:merchant, name: 'Knob Creek')
+
+        get '/api/v1/merchants/find?name=nob'
+
+        expect(response).to be_successful
+
+        merchants = JSON.parse(response.body, symbolize_names: true)
+
+        expect(merchants.count).to eq(1)
+
+        expect(merchants[:data][:attributes]).to have_key(:name)
+        expect(merchants[:data][:attributes][:name]).to eq('Knob Creek')
+      end
+
+      it 'does not return anything if no fragment matches' do 
+        merchant1 = create(:merchant, name: "Schitt's Creek")
+        merchant2 = create(:merchant, name: 'Knob Creek')
+
+        get '/api/v1/merchants/find?name=col'
+
+        merchants = JSON.parse(response.body, symbolize_names: true)
+
+        expect(merchants[:data][:message]).to eq("No matching merchant")
+      end
+
+      it 'should return an error if search param is missing' do 
+        merchant1 = create(:merchant, name: "Schitt's Creek")
+        merchant2 = create(:merchant, name: 'Knob Creek')
+
+        get '/api/v1/merchants/find?'
+
+        merchants = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(400)
+      end
+
+      it 'should return an error if search param is empty' do
+        merchant1 = create(:merchant, name: "Schitt's Creek")
+        merchant2 = create(:merchant, name: 'Knob Creek')
+
+        get '/api/v1/merchants/find?name='
+
+        merchants = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(400)
+      end 
     end
   end
+
   context 'Merchants#find_all' do
     context 'name parameter' do
       it 'should return an array of objects' do
@@ -204,6 +287,28 @@ describe 'Merchants API' do
 
         expect(response).to_not have_http_status(404)
       end
+
+      it 'should return an error if search param is missing' do 
+       merchant1 = create(:merchant, name: "Schitt's Creek")
+        merchant2 = create(:merchant, name: 'Knob Creek')
+
+        get '/api/v1/merchants/find?'
+
+        merchants = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(400)
+      end
+
+      it 'should return an error if search param is empty' do
+        merchant1 = create(:merchant, name: "Schitt's Creek")
+        merchant2 = create(:merchant, name: 'Knob Creek')
+
+        get '/api/v1/merchants/find?name='
+
+        merchants = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(400)
+      end 
     end
   end
 end
