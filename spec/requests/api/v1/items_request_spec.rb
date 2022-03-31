@@ -364,34 +364,6 @@ describe 'Items API' do
       expect(response.body).to eq('')
       expect(response).to have_http_status(204)
     end
-
-    it 'returns an error if item ID does not exist' do 
-      merchant = create(:merchant)
-      customer = create(:customer)
-      item1 = create(:item)
-      item2 = create(:item)
-      invoice = create(:invoice, merchant_id: merchant.id, customer_id: customer.id)
-      invoice_item = create(:invoice_item, invoice_id: invoice.id, item_id: item1.id, unit_price: item1.unit_price)
-      invoice_item = create(:invoice_item, invoice_id: invoice.id, item_id: item2.id, unit_price: item2.unit_price)
-
-      delete "/api/v1/items/987654321"
-
-      expect(response).to have_http_status(404)
-    end
-
-    it 'will return an error if string passed as Item ID' do 
-       merchant = create(:merchant)
-      customer = create(:customer)
-      item1 = create(:item)
-      item2 = create(:item)
-      invoice = create(:invoice, merchant_id: merchant.id, customer_id: customer.id)
-      invoice_item = create(:invoice_item, invoice_id: invoice.id, item_id: item1.id, unit_price: item1.unit_price)
-      invoice_item = create(:invoice_item, invoice_id: invoice.id, item_id: item2.id, unit_price: item2.unit_price)
-
-      delete "/api/v1/items/'string'"
-
-      expect(response).to have_http_status(404)
-    end
   end
 
   context 'Items/Merchants#index' do
@@ -417,12 +389,30 @@ describe 'Items API' do
       expect(item_merchant[:data][:attributes][:name]).to be_a String
     end
 
-    it 'returns a status 404 if item is not found' do
-      merchant = create(:merchant, id: 1)
+    it 'returns an error if item ID does not exist' do 
+      merchant = create(:merchant)
+      customer = create(:customer)
+      item1 = create(:item)
+      item2 = create(:item)
+      invoice = create(:invoice, merchant_id: merchant.id, customer_id: customer.id)
+      invoice_item = create(:invoice_item, invoice_id: invoice.id, item_id: item1.id, unit_price: item1.unit_price)
+      invoice_item = create(:invoice_item, invoice_id: invoice.id, item_id: item2.id, unit_price: item2.unit_price)
 
-      item = create(:item, merchant_id: merchant.id, id: 1)
+      get "/api/v1/items/987654321/merchant"
 
-      get '/api/v1/items/28/merchant'
+      expect(response).to have_http_status(404)
+    end
+
+    it 'will return an error if string passed as Item ID' do 
+       merchant = create(:merchant)
+      customer = create(:customer)
+      item1 = create(:item)
+      item2 = create(:item)
+      invoice = create(:invoice, merchant_id: merchant.id, customer_id: customer.id)
+      invoice_item = create(:invoice_item, invoice_id: invoice.id, item_id: item1.id, unit_price: item1.unit_price)
+      invoice_item = create(:invoice_item, invoice_id: invoice.id, item_id: item2.id, unit_price: item2.unit_price)
+
+      get "/api/v1/items/'string'/merchant"
 
       expect(response).to have_http_status(404)
     end
@@ -677,6 +667,21 @@ describe 'Items API' do
         items = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to_not have_http_status(404)
+      end
+
+      it 'should return an error if search param is missing' do 
+        item1 = create(:item, name: "Schitt's Creek")
+        item2 = create(:item, name: 'Knob Creek')
+
+        get '/api/v1/items/find_all?'
+
+        items = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to_not have_http_status(404)
+      end
+
+      xit 'should return an error if search param is empty' do 
+        
       end
     end
 
