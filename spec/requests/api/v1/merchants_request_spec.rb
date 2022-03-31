@@ -72,6 +72,21 @@ describe 'Merchants API' do
         expect(merchant[:attributes].keys).to eq([:name])
       end
     end
+
+    context 'pagination' do 
+      it 'returns the first 20 objects if no params are given' do 
+        create_list(:merchant, 50)
+
+        get '/api/v1/merchants'
+
+        expect(response).to be_successful
+
+        merchants = JSON.parse(response.body, symbolize_names: true)
+        expect(merchants[:data]).to be_an Array
+
+        expect(merchants[:data].count).to eq(20)
+      end
+    end 
   end
 
   context 'Merchants#show' do
