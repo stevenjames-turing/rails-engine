@@ -23,7 +23,6 @@
 ## About The Project
 
 - Rails Engine Lite is an E-Commerce Application. It's designed to mimic a service-oriented architecture where the front and back ends of the app communicate via APIs. This project exposes the data of Merchants and Items in the DB. 
-- Utilized API consumption from [The MovieDB](https://www.themoviedb.org/)
 - This is the Solo Project in Mod 3 of Turing's Back-End Program (2111 BE Cohort)
 - [Turing Project Page](https://backend.turing.edu/module3/projects/rails_engine_lite/)
 <p align="right">(<a href="#top">back to top</a>)</p>
