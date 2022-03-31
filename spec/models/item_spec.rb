@@ -37,9 +37,24 @@ RSpec.describe Item, type: :model do
   end
   describe 'instance methods' do 
     describe '.valid_invoice?' do 
-      it 'finds invoice item and returns count of items on an invoice' do 
-       
+      before(:each) do 
+        @merchant = create(:merchant)
+        @customer = create(:customer)
+        @invoice1 = create(:invoice, merchant_id: @merchant.id, customer_id: @customer.id)
+        @invoice2 = create(:invoice, merchant_id: @merchant.id, customer_id: @customer.id)
+        @invoice_item1 = create(:invoice_item, invoice_id: @invoice1.id, item_id: @item1.id, unit_price: @item1.unit_price)
+        @invoice_item2 = create(:invoice_item, invoice_id: @invoice1.id, item_id: @item3.id, unit_price: @item3.unit_price)
+        @invoice_item3 = create(:invoice_item, invoice_id: @invoice2.id, item_id: @item2.id, unit_price: @item2.unit_price)
       end
+      it 'finds invoice item and returns invoice if invoice has only 1 item' do 
+        expect(@item2.valid_invoice?).to eq({id: @invoice2.id})
+      end
+    
+      it 'finds invoice item and returns blank array if invoice has more than 1 item' do 
+        
+      end
+
+
     end
   end
 end

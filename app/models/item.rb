@@ -15,7 +15,7 @@ class Item < ApplicationRecord
   def valid_invoice?
     ii = InvoiceItem.where(item_id: id)
     if ii.count == 1
-      i = Invoice.where(id: ii[0].id)
+      i = Invoice.where(id: ii[0].invoice_id)
       { id: i[0].id } if i[0].invoice_items.count == 1
     end
   end
