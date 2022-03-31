@@ -31,7 +31,7 @@ RSpec.describe Item, type: :model do
           expect(Item.search_items(["min", "5"])).to eq([@item1, @item3])
         end
         it 'passes max price data to SearchHelper#search_max_price' do 
-
+          expect(Item.search_items(["max", "5"])).to eq([@item2])
         end
         it 'passes min and max price data to SearchHelper#search_between price' do 
 
