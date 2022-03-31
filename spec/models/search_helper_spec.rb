@@ -46,9 +46,9 @@ RSpec.describe SearchHelper do
       it 'searches by maximum price and returns a single object (first object in alphabetical order if multiples)' do 
         expect(Item.search_max_price(10, 1)).to eq([@item1])
       end
-
+      
       it 'searches by maximum price and returns all objects' do 
-  
+        expect(Item.search_max_price(10)).to eq([@item1, @item2, @item4])
       end
     end
   end
