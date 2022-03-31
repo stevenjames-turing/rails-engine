@@ -164,8 +164,15 @@ describe 'Merchants API' do
       expect(response).to have_http_status(404)
     end
 
-    xit 'will return an error if string passed as Item ID' do 
-     
+    it 'will return an error if string passed as Item ID' do 
+      merchant = create(:merchant, id: 1)
+
+      item1 = create(:item, merchant_id: merchant.id)
+      item2 = create(:item, merchant_id: merchant.id)
+
+      get "/api/v1/merchants/'string'/items"
+
+      expect(response).to have_http_status(404)
     end
   end
 
