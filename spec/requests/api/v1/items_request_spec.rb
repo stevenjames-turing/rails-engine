@@ -710,6 +710,18 @@ describe 'Items API' do
           expect(response).to have_http_status(400)
         end
 
+        it 'should return an error if max price less than 0' do 
+          item1 = create(:item, unit_price: 3.25, name: 'DEF Item')
+          item2 = create(:item, unit_price: 8.25, name: 'CDE Item')
+          item3 = create(:item, unit_price: 11.28, name: 'BCD Item')
+          item4 = create(:item, unit_price: 20, name: 'ABC Item')
+
+          get '/api/v1/items/find?min_price=-6&max_price=-2'
+
+          items = JSON.parse(response.body, symbolize_names: true)
+
+          expect(response).to have_http_status(400)
+        end
       end
 
       context 'name and price' do
