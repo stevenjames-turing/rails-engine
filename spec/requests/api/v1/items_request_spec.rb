@@ -364,6 +364,24 @@ describe 'Items API' do
       expect(response.body).to eq('')
       expect(response).to have_http_status(204)
     end
+
+    it 'returns an error if item ID does not exist' do 
+      merchant = create(:merchant)
+      customer = create(:customer)
+      item1 = create(:item)
+      item2 = create(:item)
+      invoice = create(:invoice, merchant_id: merchant.id, customer_id: customer.id)
+      invoice_item = create(:invoice_item, invoice_id: invoice.id, item_id: item1.id, unit_price: item1.unit_price)
+      invoice_item = create(:invoice_item, invoice_id: invoice.id, item_id: item2.id, unit_price: item2.unit_price)
+
+      delete "/api/v1/items/987654321"
+
+      expect(response).to have_http_status(404)
+    end
+
+    it 'will return an error if string passed as Item ID' do 
+
+    end
   end
 
   context 'Items/Merchants#index' do
