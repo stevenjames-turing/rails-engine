@@ -261,8 +261,8 @@ describe 'Items API' do
 
       expect(response).to have_http_status(404)
     end
-
-    it 'will return an error if string passed as item id' do 
+    
+    it 'will return an error if item ID does not exist' do 
       merchant = create(:merchant)
       id = create(:item, merchant_id: merchant.id).id
       previous_name = Item.last.name
@@ -273,14 +273,27 @@ describe 'Items API' do
         merchant_id: 999938383837
       }
       headers = { 'CONTENT_TYPE' => 'application/json' }
-
+      
       patch "/api/v1/items/987654", headers: headers, params: JSON.generate({ item: item_params })
-
+      
       expect(response).to have_http_status(404)
     end
+  
+    it 'will return an error if string passed as item id' do 
+       merchant = create(:merchant)
+      id = create(:item, merchant_id: merchant.id).id
+      previous_name = Item.last.name
+      previous_description = Item.last.description
+      item_params = {
+        name: 'Ethiopia Limu Gera',
+        description: 'Single origin coffee',
+        merchant_id: 999938383837
+      }
+      headers = { 'CONTENT_TYPE' => 'application/json' }
 
-    it 'will return an error if item ID does not exist' do 
+      patch "/api/v1/items/'thiswontwork'", headers: headers, params: JSON.generate({ item: item_params })
 
+      expect(response).to have_http_status(404)
     end
   end
 
