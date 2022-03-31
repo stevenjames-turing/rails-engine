@@ -28,6 +28,7 @@ RSpec.describe Item, type: :model do
           expect(Item.search_items(["name", "creek"])).to eq([@item2, @item1])
         end
         it 'passes min price data to SearchHelper#search_min_price' do 
+          expect(Item.search_items(["min", "5"])).to eq([@item1, @item3])
         end
         it 'passes max price data to SearchHelper#search_max_price' do 
 
