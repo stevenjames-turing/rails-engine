@@ -208,8 +208,20 @@ describe 'Merchants API' do
         expect(merchants[:data][:attributes][:name]).to eq('Knob Creek')
       end
 
-      xit 'returns even if given a partial name' do 
-        
+      it 'returns even if given a partial name' do 
+        merchant1 = create(:merchant, name: "Schitt's Creek")
+        merchant2 = create(:merchant, name: 'Knob Creek')
+
+        get '/api/v1/merchants/find?name=nob'
+
+        expect(response).to be_successful
+
+        merchants = JSON.parse(response.body, symbolize_names: true)
+
+        expect(merchants.count).to eq(1)
+
+        expect(merchants[:data][:attributes]).to have_key(:name)
+        expect(merchants[:data][:attributes][:name]).to eq('Knob Creek')
       end
 
       xit 'does not return anything if no fragment matches' do 
