@@ -26,9 +26,9 @@ RSpec.describe SearchHelper do
       it 'searches between min and max price and returns a single object (first object in alphabetical order if multiples)' do 
         expect(Item.search_between_price(5, 15, 1)).to eq([@item3])
       end
-
+      
       it 'searches between min and max price and returns all objects' do 
-
+        expect(Item.search_between_price(5, 15)).to eq([@item3, @item2, @item4])
       end
     end
 
