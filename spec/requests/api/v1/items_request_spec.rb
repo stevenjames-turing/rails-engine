@@ -233,16 +233,33 @@ describe 'Items API' do
         description: 'Single origin coffee'
       }
       headers = { 'CONTENT_TYPE' => 'application/json' }
-
+      
       patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({ item: item_params })
       item = Item.find_by(id: id)
-
+      
       expect(response).to be_successful
       expect(item.name).to_not eq(previous_name)
       expect(item.name).to eq('Ethiopia Limu Gera')
-
+      
       expect(item.description).to_not eq(previous_description)
       expect(item.description).to eq('Single origin coffee')
+    end
+    
+    it 'will return an error if merchant ID does not exist' do 
+      merchant = create(:merchant)
+      id = create(:item, merchant_id: merchant.id).id
+      previous_name = Item.last.name
+      previous_description = Item.last.description
+      item_params = {
+        name: 'Ethiopia Limu Gera',
+        description: 'Single origin coffee',
+        merchant_id: 999938383837
+      }
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+
+      patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({ item: item_params })
+
+      expect(response).to have_http_status(404)
     end
   end
 
