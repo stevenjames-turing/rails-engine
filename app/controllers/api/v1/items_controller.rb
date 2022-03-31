@@ -1,9 +1,10 @@
 class Api::V1::ItemsController < ApplicationController
   before_action :find_item, only: %i[show destroy]
   before_action :find_item_and_merchant, only: [:update]
+  before_action :set_page, only: [:index]
 
   def index
-    json_response(ItemSerializer.new(Item.all, { fields: {} }))
+    json_response(ItemSerializer.new(@paginated_items))
   end
 
   def show
@@ -70,5 +71,13 @@ class Api::V1::ItemsController < ApplicationController
   def find_item_and_merchant
     @item = Item.find(params[:id])
     @merchant = Merchant.find(@item.merchant_id)
+  end
+
+  def set_page 
+    items = Item.all
+    params[:per_page].nil? ? per_page = 20 : per_page = params[:per_page].to_i
+    params[:page].nil? ? page_number = 1 : page_number = params[:page].to_i
+
+    @paginated_items = paginate(items, per_page, page_number)
   end
 end
