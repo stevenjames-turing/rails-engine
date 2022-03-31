@@ -496,8 +496,6 @@ describe 'Items API' do
 
         expect(response).to_not have_http_status(404)
       end
-
-      
     end
 
     context 'price parameter' do
@@ -704,8 +702,15 @@ describe 'Items API' do
         expect(response).to_not have_http_status(404)
       end
 
-      xit 'should return an error if search param is empty' do 
-        
+      it 'should return an error if search param is empty' do 
+        item1 = create(:item, name: "Schitt's Creek")
+        item2 = create(:item, name: 'Knob Creek')
+
+        get '/api/v1/items/find_all?name='
+
+        items = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to_not have_http_status(404)
       end
     end
 
