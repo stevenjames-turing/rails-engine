@@ -299,7 +299,16 @@ describe 'Merchants API' do
         expect(response).to have_http_status(400)
       end
 
-      
+      it 'should return an error if search param is empty' do
+        merchant1 = create(:merchant, name: "Schitt's Creek")
+        merchant2 = create(:merchant, name: 'Knob Creek')
+
+        get '/api/v1/merchants/find?name='
+
+        merchants = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to have_http_status(400)
+      end 
     end
   end
 end
