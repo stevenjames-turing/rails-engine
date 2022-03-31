@@ -92,6 +92,44 @@ describe 'Items API' do
         expect(item[:attributes].keys).to eq(%i[name description unit_price merchant_id])
       end
     end
+
+    context 'pagination' do 
+      it 'returns the first 20 objects if no params are given' do 
+        create_list(:item, 50)
+
+        get '/api/v1/items'
+
+        expect(response).to be_successful
+
+        items = JSON.parse(response.body, symbolize_names: true)
+        expect(items[:data]).to be_an Array
+
+        expect(items[:data].count).to eq(20)
+      end
+
+      xit 'returns the number of objects passed in params' do 
+
+      end
+
+      xit 'will return the next 20 objects if given a page number param' do 
+
+      end
+
+      xit 'returns if page and per_page params are passed together' do 
+
+      end
+
+      xit 'returns an array of data even if no resources are found' do
+        # get '/api/v1/items'
+
+        # expect(response).to be_successful
+
+        # items = JSON.parse(response.body, symbolize_names: true)
+        # expect(items[:data]).to be_an Array
+
+        # expect(items[:data].count).to eq(0)
+      end
+    end
   end
 
   context 'Items#show' do
