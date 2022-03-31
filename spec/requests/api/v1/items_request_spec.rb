@@ -280,7 +280,7 @@ describe 'Items API' do
     end
   
     it 'will return an error if string passed as item id' do 
-       merchant = create(:merchant)
+      merchant = create(:merchant)
       id = create(:item, merchant_id: merchant.id).id
       previous_name = Item.last.name
       previous_description = Item.last.description
