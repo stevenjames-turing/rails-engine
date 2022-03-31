@@ -138,8 +138,17 @@ describe 'Items API' do
         end
       end
 
-      xit 'returns if page and per_page params are passed together' do 
+      it 'returns if page and per_page params are passed together' do 
+        create_list(:item, 50)
 
+        get '/api/v1/items?per_page=15&page=3'
+
+        expect(response).to be_successful
+
+        items = JSON.parse(response.body, symbolize_names: true)
+        expect(items[:data]).to be_an Array
+
+        expect(items[:data].count).to eq(15)
       end
 
       xit 'returns an array of data even if no resources are found' do
