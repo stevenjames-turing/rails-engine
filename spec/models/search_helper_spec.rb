@@ -34,11 +34,10 @@ RSpec.describe SearchHelper do
 
     describe '#search_min_price(min, count)' do 
       it 'searches by minimum price and returns a single object (first object in alphabetical order if multiples)' do 
-        
+        expect(Item.search_min_price(10, 1)).to eq([@item3])
       end
-
+      
       it 'searches by minimum price and returns all objects' do 
-
       end
     end
 
