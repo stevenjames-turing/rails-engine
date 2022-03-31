@@ -404,7 +404,7 @@ describe 'Items API' do
     end
 
     it 'will return an error if string passed as Item ID' do 
-       merchant = create(:merchant)
+      merchant = create(:merchant)
       customer = create(:customer)
       item1 = create(:item)
       item2 = create(:item)
@@ -483,7 +483,7 @@ describe 'Items API' do
 
         items = JSON.parse(response.body, symbolize_names: true)
 
-        expect(response).to_not have_http_status(404)
+        expect(response).to have_http_status(400)
       end
 
       it 'should return an error if search param is empty' do 
@@ -494,7 +494,7 @@ describe 'Items API' do
 
         items = JSON.parse(response.body, symbolize_names: true)
 
-        expect(response).to_not have_http_status(404)
+        expect(response).to have_http_status(400)
       end
     end
 
@@ -547,7 +547,7 @@ describe 'Items API' do
 
           items = JSON.parse(response.body, symbolize_names: true)
 
-          expect(response).to_not have_http_status(404)
+          expect(response).to have_http_status(400)
         end
         
         it 'should return an error if min price param is empty' do 
@@ -560,7 +560,7 @@ describe 'Items API' do
 
           items = JSON.parse(response.body, symbolize_names: true)
 
-          expect(response).to_not have_http_status(404)
+          expect(response).to have_http_status(400)
         end
       end
 
@@ -610,11 +610,11 @@ describe 'Items API' do
           item3 = create(:item, unit_price: 11.28, name: 'BCD Item')
           item4 = create(:item, unit_price: 20, name: 'ABC Item')
 
-          get '/api/v1/items/find_all?max_price=-2'
+          get '/api/v1/items/find?max_price=-2'
 
           items = JSON.parse(response.body, symbolize_names: true)
 
-          expect(response).to_not have_http_status(404)
+          expect(response).to have_http_status(400)
         end
 
         it 'should return an error if max price param is empty' do 
@@ -627,7 +627,7 @@ describe 'Items API' do
 
           items = JSON.parse(response.body, symbolize_names: true)
 
-          expect(response).to_not have_http_status(404)
+          expect(response).to have_http_status(400)
         end
       end
 
@@ -762,7 +762,7 @@ describe 'Items API' do
 
         items = JSON.parse(response.body, symbolize_names: true)
 
-        expect(response).to_not have_http_status(404)
+        expect(response).to have_http_status(400)
       end
 
       it 'should return an error if search param is empty' do 
@@ -773,7 +773,7 @@ describe 'Items API' do
 
         items = JSON.parse(response.body, symbolize_names: true)
 
-        expect(response).to_not have_http_status(404)
+        expect(response).to have_http_status(400)
       end
     end
 
@@ -821,7 +821,7 @@ describe 'Items API' do
   
           items = JSON.parse(response.body, symbolize_names: true)
   
-          expect(response).to_not have_http_status(404)
+          expect(response).to have_http_status(400)
         end
 
         it 'should return an error if min price param is empty' do 
@@ -834,7 +834,7 @@ describe 'Items API' do
 
           items = JSON.parse(response.body, symbolize_names: true)
 
-          expect(response).to_not have_http_status(404)
+          expect(response).to have_http_status(400)
         end
       end
       
@@ -880,7 +880,7 @@ describe 'Items API' do
 
           items = JSON.parse(response.body, symbolize_names: true)
 
-          expect(response).to_not have_http_status(404)
+          expect(response).to have_http_status(400)
         end
         
         it 'should return an error if max price param is empty' do 
@@ -893,7 +893,7 @@ describe 'Items API' do
 
           items = JSON.parse(response.body, symbolize_names: true)
 
-          expect(response).to_not have_http_status(404)
+          expect(response).to have_http_status(400)
         end
       end
 
@@ -939,7 +939,7 @@ describe 'Items API' do
 
           items = JSON.parse(response.body, symbolize_names: true)
 
-          expect(response).to_not have_http_status(404)
+          expect(response).to have_http_status(400)
         end
       end
     end
