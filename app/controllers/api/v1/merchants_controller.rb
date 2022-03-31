@@ -1,8 +1,10 @@
 class Api::V1::MerchantsController < ApplicationController
   before_action :find_merchant, only: [:show]
+  before_action :set_page, only: [:index]
+
 
   def index
-    json_response(MerchantSerializer.new(Merchant.all))
+    json_response(MerchantSerializer.new(@paginated_merchants))
   end
 
   def show
@@ -37,5 +39,13 @@ class Api::V1::MerchantsController < ApplicationController
 
   def find_merchant
     @merchant = Merchant.find(params[:id])
+  end
+
+  def set_page 
+    items = Merchant.all
+    params[:per_page].nil? ? per_page = 20 : per_page = params[:per_page].to_i
+    params[:page].nil? ? page_number = 1 : page_number = params[:page].to_i
+
+    @paginated_merchants = paginate(items, per_page, page_number)
   end
 end
