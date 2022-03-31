@@ -99,6 +99,24 @@ describe 'Merchants API' do
 
         expect(merchants[:data].count).to eq(35)
       end
+
+      it 'will return the next 20 objects if given a page number param' do 
+        create_list(:merchant, 50)
+  
+        get '/api/v1/merchants?page=1'
+        
+        first_20_merchants = JSON.parse(response.body, symbolize_names: true)
+        
+        get '/api/v1/merchants?page=2'
+        
+        next_20_merchants = JSON.parse(response.body, symbolize_names: true)
+  
+        expect(next_20_merchants[:data].count).to eq(20)
+
+        next_20_merchants.each do |merchant|
+          expect(first_20_merchants.include?(merchant)).to be false
+        end
+      end
     end 
   end
 
