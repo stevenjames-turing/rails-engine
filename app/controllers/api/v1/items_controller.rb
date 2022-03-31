@@ -34,25 +34,11 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def find
-    if params[:name] && params[:min_price]
-      @item = nil
-    elsif params[:name] && params[:max_price]
-      @item = nil
-    elsif params[:name] && !params[:name].nil? && (params[:name] != '')
-      @item = Item.name_search(params[:name])
-    elsif (params[:min_price]) && (params[:max_price]) && (params[:max_price].to_i >= 0) && (params[:min_price].to_i >= 0)
-      if (params[:max_price].to_i >= params[:min_price].to_i)
-        @item = Item.price_search(params[:min_price], params[:max_price])
-      else 
-        @item = nil 
-      end
-    elsif (params[:min_price]) && (params[:min_price] != nil) && (params[:min_price] != "") && (params[:min_price].to_i >= 0)
-      @item = Item.price_search(params[:min_price], nil)
-    elsif params[:max_price] && (params[:max_price] != nil) && (params[:max_price] != "") && (params[:max_price].to_i >= 0)
-      @item = Item.price_search(nil, params[:max_price])
-    end
-    
-    if @item != nil && @item.count == 1
+    search_status = verify_search_params(params)
+    if search_status[0] != "invalid"
+       @item = Item.search_items(search_status, 1)
+    end 
+    if !@item.nil? && @item.count == 1
       json_response(ItemSerializer.new(@item[0]))
     else 
       json_response({ "error": {message: 'No matching items'}, "data": {data: []}}, :bad_request)
@@ -60,20 +46,10 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def find_all
-    if params[:name] && params[:min_price]
-      @item = nil
-    elsif params[:name] && params[:max_price]
-      @item = nil
-    elsif params[:name] && !params[:name].nil? && (params[:name] != '')
-      @item = Item.find_all_by_name(params[:name])
-    elsif params[:min_price] && params[:max_price]
-      @item = Item.find_all_by_price(params[:min_price], params[:max_price])
-    elsif params[:min_price]
-      @item = Item.find_all_by_price(params[:min_price], nil)
-    elsif params[:max_price]
-      @item = Item.find_all_by_price(nil, params[:max_price])
-    end
-
+    search_status = verify_search_params(params)
+    if search_status[0] != "invalid"
+       @item = Item.search_items(search_status)
+    end 
     if !@item.nil? && @item.count >= 1
       json_response(ItemSerializer.new(@item))
     else
@@ -85,10 +61,6 @@ class Api::V1::ItemsController < ApplicationController
 
   def item_params
     params.require(:item).permit(:name, :description, :unit_price, :merchant_id)
-  end
-
-  def find_merchant
-    @merchant = Merchant.find(params[:merchant_id])
   end
 
   def find_item

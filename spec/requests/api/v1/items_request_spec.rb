@@ -122,6 +122,28 @@ describe 'Items API' do
       expect(item[:data][:attributes]).to have_key(:unit_price)
       expect(item[:data][:attributes][:unit_price]).to be_a Float
     end
+
+    it 'returns a 404 error if ID not found' do 
+      item1 = create(:item)
+      item2 = create(:item)
+
+      get "/api/v1/items/987654"
+
+      item = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response).to have_http_status(404)
+    end
+    
+    it 'returns a 404 error is string passed as ID' do 
+      item1 = create(:item)
+      item2 = create(:item)
+  
+      get "/api/v1/items/'thiswontwork'"
+  
+      item = JSON.parse(response.body, symbolize_names: true)
+  
+      expect(response).to have_http_status(404)
+    end
   end
 
   context 'Items#create' do
@@ -211,16 +233,67 @@ describe 'Items API' do
         description: 'Single origin coffee'
       }
       headers = { 'CONTENT_TYPE' => 'application/json' }
-
+      
       patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({ item: item_params })
       item = Item.find_by(id: id)
-
+      
       expect(response).to be_successful
       expect(item.name).to_not eq(previous_name)
       expect(item.name).to eq('Ethiopia Limu Gera')
-
+      
       expect(item.description).to_not eq(previous_description)
       expect(item.description).to eq('Single origin coffee')
+    end
+    
+    it 'will return an error if merchant ID does not exist' do 
+      merchant = create(:merchant)
+      id = create(:item, merchant_id: merchant.id).id
+      previous_name = Item.last.name
+      previous_description = Item.last.description
+      item_params = {
+        name: 'Ethiopia Limu Gera',
+        description: 'Single origin coffee',
+        merchant_id: 999938383837
+      }
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+
+      patch "/api/v1/items/#{id}", headers: headers, params: JSON.generate({ item: item_params })
+
+      expect(response).to have_http_status(404)
+    end
+    
+    it 'will return an error if item ID does not exist' do 
+      merchant = create(:merchant)
+      id = create(:item, merchant_id: merchant.id).id
+      previous_name = Item.last.name
+      previous_description = Item.last.description
+      item_params = {
+        name: 'Ethiopia Limu Gera',
+        description: 'Single origin coffee',
+        merchant_id: 999938383837
+      }
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+      
+      patch "/api/v1/items/987654", headers: headers, params: JSON.generate({ item: item_params })
+      
+      expect(response).to have_http_status(404)
+    end
+  
+    it 'will return an error if string passed as item id' do 
+       merchant = create(:merchant)
+      id = create(:item, merchant_id: merchant.id).id
+      previous_name = Item.last.name
+      previous_description = Item.last.description
+      item_params = {
+        name: 'Ethiopia Limu Gera',
+        description: 'Single origin coffee',
+        merchant_id: 999938383837
+      }
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+
+      patch "/api/v1/items/'thiswontwork'", headers: headers, params: JSON.generate({ item: item_params })
+
+      expect(response).to have_http_status(404)
     end
   end
 
@@ -316,12 +389,30 @@ describe 'Items API' do
       expect(item_merchant[:data][:attributes][:name]).to be_a String
     end
 
-    it 'returns a status 404 if item is not found' do
-      merchant = create(:merchant, id: 1)
+    it 'returns an error if item ID does not exist' do 
+      merchant = create(:merchant)
+      customer = create(:customer)
+      item1 = create(:item)
+      item2 = create(:item)
+      invoice = create(:invoice, merchant_id: merchant.id, customer_id: customer.id)
+      invoice_item = create(:invoice_item, invoice_id: invoice.id, item_id: item1.id, unit_price: item1.unit_price)
+      invoice_item = create(:invoice_item, invoice_id: invoice.id, item_id: item2.id, unit_price: item2.unit_price)
 
-      item = create(:item, merchant_id: merchant.id, id: 1)
+      get "/api/v1/items/987654321/merchant"
 
-      get '/api/v1/items/28/merchant'
+      expect(response).to have_http_status(404)
+    end
+
+    it 'will return an error if string passed as Item ID' do 
+       merchant = create(:merchant)
+      customer = create(:customer)
+      item1 = create(:item)
+      item2 = create(:item)
+      invoice = create(:invoice, merchant_id: merchant.id, customer_id: customer.id)
+      invoice_item = create(:invoice_item, invoice_id: invoice.id, item_id: item1.id, unit_price: item1.unit_price)
+      invoice_item = create(:invoice_item, invoice_id: invoice.id, item_id: item2.id, unit_price: item2.unit_price)
+
+      get "/api/v1/items/'string'/merchant"
 
       expect(response).to have_http_status(404)
     end
@@ -356,6 +447,54 @@ describe 'Items API' do
 
         expect(items[:data][:attributes]).to have_key(:name)
         expect(items[:data][:attributes][:name]).to eq('Knob Creek')
+      end
+
+      it 'returns even if given a partial name' do 
+        item1 = create(:item, name: "Schitt's Creek")
+        item2 = create(:item, name: 'Knob Creek')
+        get '/api/v1/items/find?name=cre'
+
+        expect(response).to be_successful
+
+        items = JSON.parse(response.body, symbolize_names: true)
+
+        expect(items.count).to eq(1)
+
+        expect(items[:data][:attributes]).to have_key(:name)
+        expect(items[:data][:attributes][:name]).to eq('Knob Creek')
+      end
+
+      it 'does not return anything if no fragment matches' do 
+        item1 = create(:item, name: "Schitt's Creek")
+        item2 = create(:item, name: 'Knob Creek')
+        get '/api/v1/items/find?name=col'
+
+        items = JSON.parse(response.body, symbolize_names: true)
+
+        expect(items).to have_key(:error)
+        expect(items[:error][:message]).to eq("No matching items")
+      end
+
+      it 'should return an error if search param is missing' do 
+        item1 = create(:item, name: "Schitt's Creek")
+        item2 = create(:item, name: 'Knob Creek')
+
+        get '/api/v1/items/find?'
+
+        items = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to_not have_http_status(404)
+      end
+
+      it 'should return an error if search param is empty' do 
+        item1 = create(:item, name: "Schitt's Creek")
+        item2 = create(:item, name: 'Knob Creek')
+
+        get '/api/v1/items/find?name='
+
+        items = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to_not have_http_status(404)
       end
     end
 
@@ -397,6 +536,32 @@ describe 'Items API' do
           expect(items[:data][:attributes]).to have_key(:name)
           expect(items[:data][:attributes][:name]).to eq('Knob Creek')
         end
+
+        it 'should return an error if min price less than 0' do 
+          item1 = create(:item, unit_price: 3.25, name: 'DEF Item')
+          item2 = create(:item, unit_price: 8.25, name: 'CDE Item')
+          item3 = create(:item, unit_price: 11.28, name: 'BCD Item')
+          item4 = create(:item, unit_price: 20, name: 'ABC Item')
+
+          get '/api/v1/items/find?min_price=-2'
+
+          items = JSON.parse(response.body, symbolize_names: true)
+
+          expect(response).to_not have_http_status(404)
+        end
+        
+        it 'should return an error if min price param is empty' do 
+          item1 = create(:item, unit_price: 3.25, name: 'DEF Item')
+          item2 = create(:item, unit_price: 8.25, name: 'CDE Item')
+          item3 = create(:item, unit_price: 11.28, name: 'BCD Item')
+          item4 = create(:item, unit_price: 20, name: 'ABC Item')
+
+          get '/api/v1/items/find?min_price='
+
+          items = JSON.parse(response.body, symbolize_names: true)
+
+          expect(response).to_not have_http_status(404)
+        end
       end
 
       context 'max_price' do
@@ -437,6 +602,32 @@ describe 'Items API' do
 
           expect(items[:data][:attributes]).to have_key(:name)
           expect(items[:data][:attributes][:name]).to eq('Knob Creek')
+        end
+
+        it 'should return an error if max price less than 0' do 
+          item1 = create(:item, unit_price: 3.25, name: 'DEF Item')
+          item2 = create(:item, unit_price: 8.25, name: 'CDE Item')
+          item3 = create(:item, unit_price: 11.28, name: 'BCD Item')
+          item4 = create(:item, unit_price: 20, name: 'ABC Item')
+
+          get '/api/v1/items/find_all?max_price=-2'
+
+          items = JSON.parse(response.body, symbolize_names: true)
+
+          expect(response).to_not have_http_status(404)
+        end
+
+        it 'should return an error if max price param is empty' do 
+          item1 = create(:item, unit_price: 3.25, name: 'DEF Item')
+          item2 = create(:item, unit_price: 8.25, name: 'CDE Item')
+          item3 = create(:item, unit_price: 11.28, name: 'BCD Item')
+          item4 = create(:item, unit_price: 20, name: 'ABC Item')
+
+          get '/api/v1/items/find?max_price='
+
+          items = JSON.parse(response.body, symbolize_names: true)
+
+          expect(response).to_not have_http_status(404)
         end
       end
 
@@ -509,13 +700,24 @@ describe 'Items API' do
       end
 
       context 'name and price' do
-        it 'should return an error if price and name parameters are used together' do
+        it 'should return an error if max_price and name parameters are used together' do
           create(:item, unit_price: 3.25)
           create(:item, unit_price: 8.25)
           create(:item, unit_price: 11.28)
           create(:item, unit_price: 2, name: "Schitt's Creek")
 
           get '/api/v1/items/find?name=creek&max_price=3'
+
+          expect(response).to have_http_status(400)
+        end
+
+        it 'should return an error if min_price and name parameters are used together' do
+          create(:item, unit_price: 3.25)
+          create(:item, unit_price: 8.25)
+          create(:item, unit_price: 11.28)
+          create(:item, unit_price: 2, name: "Schitt's Creek")
+
+          get '/api/v1/items/find?name=creek&min_price=3'
 
           expect(response).to have_http_status(400)
         end
@@ -551,6 +753,28 @@ describe 'Items API' do
 
         expect(response).to_not have_http_status(404)
       end
+
+      it 'should return an error if search param is missing' do 
+        item1 = create(:item, name: "Schitt's Creek")
+        item2 = create(:item, name: 'Knob Creek')
+
+        get '/api/v1/items/find_all?'
+
+        items = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to_not have_http_status(404)
+      end
+
+      it 'should return an error if search param is empty' do 
+        item1 = create(:item, name: "Schitt's Creek")
+        item2 = create(:item, name: 'Knob Creek')
+
+        get '/api/v1/items/find_all?name='
+
+        items = JSON.parse(response.body, symbolize_names: true)
+
+        expect(response).to_not have_http_status(404)
+      end
     end
 
     context 'price parameter' do
@@ -564,30 +788,56 @@ describe 'Items API' do
           get '/api/v1/items/find_all?min_price=5'
 
           expect(response).to be_successful
-
+          
           items = JSON.parse(response.body, symbolize_names: true)
-
+          
           expect(items[:data].count).to eq(3)
-
+          
           expect(items[:data][0][:attributes][:unit_price]).to eq(20)
           expect(items[:data][1][:attributes][:unit_price]).to eq(11.28)
           expect(items[:data][2][:attributes][:unit_price]).to eq(8.25)
         end
-
+        
         it 'should not return a 404 if no objects are found' do
           item1 = create(:item, unit_price: 3.25)
           item2 = create(:item, unit_price: 8.25, name: 'CDE Item')
           item3 = create(:item, unit_price: 11.28, name: 'BCD Item')
           item4 = create(:item, unit_price: 20, name: 'ABC Item')
-
+          
           get '/api/v1/items/find_all?min_price=25'
+          
+          items = JSON.parse(response.body, symbolize_names: true)
+          
+          expect(response).to_not have_http_status(404)
+        end
+
+        it 'should return an error if min price less than 0' do 
+          item1 = create(:item, unit_price: 3.25, name: 'DEF Item')
+          item2 = create(:item, unit_price: 8.25, name: 'CDE Item')
+          item3 = create(:item, unit_price: 11.28, name: 'BCD Item')
+          item4 = create(:item, unit_price: 20, name: 'ABC Item')
+  
+          get '/api/v1/items/find_all?min_price=-2'
+  
+          items = JSON.parse(response.body, symbolize_names: true)
+  
+          expect(response).to_not have_http_status(404)
+        end
+
+        it 'should return an error if min price param is empty' do 
+          item1 = create(:item, unit_price: 3.25, name: 'DEF Item')
+          item2 = create(:item, unit_price: 8.25, name: 'CDE Item')
+          item3 = create(:item, unit_price: 11.28, name: 'BCD Item')
+          item4 = create(:item, unit_price: 20, name: 'ABC Item')
+
+          get '/api/v1/items/find_all?min_price='
 
           items = JSON.parse(response.body, symbolize_names: true)
 
           expect(response).to_not have_http_status(404)
         end
       end
-
+      
       context 'max_price' do
         it 'should return an array of objects' do
           item1 = create(:item, unit_price: 3.25, name: 'DEF Item')
@@ -614,6 +864,32 @@ describe 'Items API' do
           item4 = create(:item, unit_price: 20, name: 'ABC Item')
 
           get '/api/v1/items/find_all?max_price=2'
+
+          items = JSON.parse(response.body, symbolize_names: true)
+
+          expect(response).to_not have_http_status(404)
+        end
+
+        it 'should return an error if max price less than 0' do 
+          item1 = create(:item, unit_price: 3.25, name: 'DEF Item')
+          item2 = create(:item, unit_price: 8.25, name: 'CDE Item')
+          item3 = create(:item, unit_price: 11.28, name: 'BCD Item')
+          item4 = create(:item, unit_price: 20, name: 'ABC Item')
+
+          get '/api/v1/items/find_all?max_price=-2'
+
+          items = JSON.parse(response.body, symbolize_names: true)
+
+          expect(response).to_not have_http_status(404)
+        end
+        
+        it 'should return an error if max price param is empty' do 
+          item1 = create(:item, unit_price: 3.25, name: 'DEF Item')
+          item2 = create(:item, unit_price: 8.25, name: 'CDE Item')
+          item3 = create(:item, unit_price: 11.28, name: 'BCD Item')
+          item4 = create(:item, unit_price: 20, name: 'ABC Item')
+
+          get '/api/v1/items/find_all?max_price='
 
           items = JSON.parse(response.body, symbolize_names: true)
 
@@ -652,20 +928,44 @@ describe 'Items API' do
 
           expect(response).to_not have_http_status(404)
         end
+
+        it 'will return an error if min price greater than max price' do 
+          item1 = create(:item, unit_price: 3.25, name: 'DEF Item')
+          item2 = create(:item, unit_price: 8.25, name: 'CDE Item')
+          item3 = create(:item, unit_price: 11.28, name: 'BCD Item')
+          item4 = create(:item, unit_price: 20, name: 'ABC Item')
+
+          get '/api/v1/items/find_all?min_price=5&max_price=2'
+
+          items = JSON.parse(response.body, symbolize_names: true)
+
+          expect(response).to_not have_http_status(404)
+        end
       end
     end
 
     context 'name and price' do
-      it 'should return an error if price and name parameters are used together' do
-        create(:item, unit_price: 3.25)
-        create(:item, unit_price: 8.25)
-        create(:item, unit_price: 11.28)
-        create(:item, unit_price: 2, name: "Schitt's Creek")
+      it 'should return an error if max_price and name parameters are used together' do
+          create(:item, unit_price: 3.25)
+          create(:item, unit_price: 8.25)
+          create(:item, unit_price: 11.28)
+          create(:item, unit_price: 2, name: "Schitt's Creek")
 
-        get '/api/v1/items/find_all?name=creek&max_price=3'
+          get '/api/v1/items/find_all?name=creek&max_price=3'
 
-        expect(response).to have_http_status(400)
-      end
+          expect(response).to have_http_status(400)
+        end
+
+        it 'should return an error if min_price and name parameters are used together' do
+          create(:item, unit_price: 3.25)
+          create(:item, unit_price: 8.25)
+          create(:item, unit_price: 11.28)
+          create(:item, unit_price: 2, name: "Schitt's Creek")
+
+          get '/api/v1/items/find_all?name=creek&min_price=3'
+
+          expect(response).to have_http_status(400)
+        end
     end
   end
 end
