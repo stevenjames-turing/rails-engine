@@ -151,15 +151,15 @@ describe 'Items API' do
         expect(items[:data].count).to eq(15)
       end
 
-      xit 'returns an array of data even if no resources are found' do
-        # get '/api/v1/items'
+      it 'returns an array of data even if no resources are found' do
+        get '/api/v1/items?per_page=15&page=2'
 
-        # expect(response).to be_successful
+        expect(response).to be_successful
 
-        # items = JSON.parse(response.body, symbolize_names: true)
-        # expect(items[:data]).to be_an Array
+        items = JSON.parse(response.body, symbolize_names: true)
+        expect(items[:data]).to be_an Array
 
-        # expect(items[:data].count).to eq(0)
+        expect(items[:data].count).to eq(0)
       end
     end
   end
