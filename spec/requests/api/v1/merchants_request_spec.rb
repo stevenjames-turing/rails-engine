@@ -92,6 +92,21 @@ describe 'Merchants API' do
       expect(merchant[:data][:attributes]).to have_key(:name)
       expect(merchant[:data][:attributes][:name]).to be_a String
     end
+
+    it 'returns a 404 error if ID not found' do 
+      id = create(:merchant).id
+      id2 = create(:merchant).id
+
+      get "/api/v1/merchants/987654321"
+
+      merchant = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response).to have_http_status(404)
+    end
+    
+    xit 'returns a 404 error is string passed as ID' do 
+     
+    end
   end
 
   context 'Merchants/Items#index' do
@@ -141,6 +156,10 @@ describe 'Merchants API' do
 
       expect(response).to have_http_status(404)
     end
+
+    xit 'will return an error if string passed as Item ID' do 
+     
+    end
   end
 
   context 'Merchants#find' do
@@ -174,8 +193,25 @@ describe 'Merchants API' do
         expect(merchants[:data][:attributes]).to have_key(:name)
         expect(merchants[:data][:attributes][:name]).to eq('Knob Creek')
       end
+
+      xit 'returns even if given a partial name' do 
+        
+      end
+
+      xit 'does not return anything if no fragment matches' do 
+        
+      end
+
+      xit 'should return an error if search param is missing' do 
+        
+      end
+
+      xit 'should return an error if search param is empty' do
+
+      end 
     end
   end
+
   context 'Merchants#find_all' do
     context 'name parameter' do
       it 'should return an array of objects' do
@@ -203,6 +239,14 @@ describe 'Merchants API' do
         merchants = JSON.parse(response.body, symbolize_names: true)
 
         expect(response).to_not have_http_status(404)
+      end
+
+      xit 'should return an error if search param is missing' do 
+       
+      end
+
+      xit 'should return an error if search param is empty' do 
+        
       end
     end
   end
