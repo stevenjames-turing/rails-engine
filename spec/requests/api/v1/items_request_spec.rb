@@ -107,8 +107,17 @@ describe 'Items API' do
         expect(items[:data].count).to eq(20)
       end
 
-      xit 'returns the number of objects passed in params' do 
+      it 'returns the number of objects passed in params' do 
+        create_list(:item, 50)
 
+        get '/api/v1/items?per_page=35'
+
+        expect(response).to be_successful
+
+        items = JSON.parse(response.body, symbolize_names: true)
+        expect(items[:data]).to be_an Array
+
+        expect(items[:data].count).to eq(35)
       end
 
       xit 'will return the next 20 objects if given a page number param' do 
