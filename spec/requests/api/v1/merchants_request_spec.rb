@@ -117,6 +117,21 @@ describe 'Merchants API' do
           expect(first_20_merchants.include?(merchant)).to be false
         end
       end
+
+      it 'returns if page and per_page params are passed together' do 
+        create_list(:merchant, 50)
+
+        get '/api/v1/merchants?per_page=15&page=3'
+
+        expect(response).to be_successful
+
+        merchants = JSON.parse(response.body, symbolize_names: true)
+        expect(merchants[:data]).to be_an Array
+
+        expect(merchants[:data].count).to eq(15)
+      end
+
+      
     end 
   end
 
