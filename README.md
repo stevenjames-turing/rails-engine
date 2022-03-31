@@ -9,7 +9,13 @@
     <li><a href="#about-the-project">About The Project</a></li>
     <li><a href="#getting-started">Getting Started</a></li>
     <li><a href="#built-with">Built With</a></li>
-    <li><a href="#testing">Testing</a></li>
+    <li>
+      <a href="#testing">Testing</a>
+      <ul>
+        <li><a href="#rspec-test-results">RSpec Test Results</a></li>
+        <li><a href="#postman-test-results">Postman Test Results</a></li>
+      </ul>
+    </li>
     <li><a href="#database-design">Database Design</a></li>
   </ol>
 </details>
@@ -51,6 +57,17 @@
   - SimpleCov is included to ensure tests have full coverage.
   - To run the Simplecov report type the following into your terminal: open coverage/index.html
   - See details here: [SimpleCov](https://github.com/simplecov-ruby/simplecov)
+  
+  ### RSpec Test Results
+
+  ![Test Results](https://user-images.githubusercontent.com/91357724/161151501-748c3870-c1fa-40b2-b01a-b507e1e2a3ac.png)
+  
+  ### Postman Test Results 
+  
+  ![Postman Test Results - Part 1](https://user-images.githubusercontent.com/91357724/161151837-2da73693-c3e0-496b-96a1-03eddd91b09e.png)
+  ![Postman Test Results - Part 2](https://user-images.githubusercontent.com/91357724/161151851-bded8a9c-ade3-4ada-8b21-ad9a241168dd.png)
+  
+
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Database Design
