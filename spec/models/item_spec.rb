@@ -46,15 +46,14 @@ RSpec.describe Item, type: :model do
         @invoice_item2 = create(:invoice_item, invoice_id: @invoice1.id, item_id: @item3.id, unit_price: @item3.unit_price)
         @invoice_item3 = create(:invoice_item, invoice_id: @invoice2.id, item_id: @item2.id, unit_price: @item2.unit_price)
       end
+      
       it 'finds invoice item and returns invoice if invoice has only 1 item' do 
         expect(@item2.valid_invoice?).to eq({id: @invoice2.id})
       end
-    
+      
       it 'finds invoice item and returns blank array if invoice has more than 1 item' do 
-        
+        expect(@item1.valid_invoice?).to eq(nil)
       end
-
-
     end
   end
 end
