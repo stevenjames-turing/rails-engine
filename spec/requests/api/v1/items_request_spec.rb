@@ -536,6 +536,19 @@ describe 'Items API' do
           expect(items[:data][:attributes]).to have_key(:name)
           expect(items[:data][:attributes][:name]).to eq('Knob Creek')
         end
+
+        it 'should return an error if min price less than 0' do 
+          item1 = create(:item, unit_price: 3.25, name: 'DEF Item')
+          item2 = create(:item, unit_price: 8.25, name: 'CDE Item')
+          item3 = create(:item, unit_price: 11.28, name: 'BCD Item')
+          item4 = create(:item, unit_price: 20, name: 'ABC Item')
+
+          get '/api/v1/items/find?min_price=-2'
+
+          items = JSON.parse(response.body, symbolize_names: true)
+
+          expect(response).to_not have_http_status(404)
+        end
       end
 
       context 'max_price' do
@@ -576,6 +589,19 @@ describe 'Items API' do
 
           expect(items[:data][:attributes]).to have_key(:name)
           expect(items[:data][:attributes][:name]).to eq('Knob Creek')
+        end
+
+        it 'should return an error if max price less than 0' do 
+          item1 = create(:item, unit_price: 3.25, name: 'DEF Item')
+          item2 = create(:item, unit_price: 8.25, name: 'CDE Item')
+          item3 = create(:item, unit_price: 11.28, name: 'BCD Item')
+          item4 = create(:item, unit_price: 20, name: 'ABC Item')
+
+          get '/api/v1/items/find_all?max_price=-2'
+
+          items = JSON.parse(response.body, symbolize_names: true)
+
+          expect(response).to_not have_http_status(404)
         end
       end
 
@@ -736,30 +762,43 @@ describe 'Items API' do
           get '/api/v1/items/find_all?min_price=5'
 
           expect(response).to be_successful
-
+          
           items = JSON.parse(response.body, symbolize_names: true)
-
+          
           expect(items[:data].count).to eq(3)
-
+          
           expect(items[:data][0][:attributes][:unit_price]).to eq(20)
           expect(items[:data][1][:attributes][:unit_price]).to eq(11.28)
           expect(items[:data][2][:attributes][:unit_price]).to eq(8.25)
         end
-
+        
         it 'should not return a 404 if no objects are found' do
           item1 = create(:item, unit_price: 3.25)
           item2 = create(:item, unit_price: 8.25, name: 'CDE Item')
           item3 = create(:item, unit_price: 11.28, name: 'BCD Item')
           item4 = create(:item, unit_price: 20, name: 'ABC Item')
-
+          
           get '/api/v1/items/find_all?min_price=25'
-
+          
           items = JSON.parse(response.body, symbolize_names: true)
+          
+          expect(response).to_not have_http_status(404)
+        end
 
+        it 'should return an error if min price less than 0' do 
+          item1 = create(:item, unit_price: 3.25, name: 'DEF Item')
+          item2 = create(:item, unit_price: 8.25, name: 'CDE Item')
+          item3 = create(:item, unit_price: 11.28, name: 'BCD Item')
+          item4 = create(:item, unit_price: 20, name: 'ABC Item')
+  
+          get '/api/v1/items/find_all?min_price=-2'
+  
+          items = JSON.parse(response.body, symbolize_names: true)
+  
           expect(response).to_not have_http_status(404)
         end
       end
-
+      
       context 'max_price' do
         it 'should return an array of objects' do
           item1 = create(:item, unit_price: 3.25, name: 'DEF Item')
@@ -799,19 +838,6 @@ describe 'Items API' do
           item4 = create(:item, unit_price: 20, name: 'ABC Item')
 
           get '/api/v1/items/find_all?max_price=-2'
-
-          items = JSON.parse(response.body, symbolize_names: true)
-
-          expect(response).to_not have_http_status(404)
-        end
-
-        it 'should return an error if min price less than 0' do 
-          item1 = create(:item, unit_price: 3.25, name: 'DEF Item')
-          item2 = create(:item, unit_price: 8.25, name: 'CDE Item')
-          item3 = create(:item, unit_price: 11.28, name: 'BCD Item')
-          item4 = create(:item, unit_price: 20, name: 'ABC Item')
-
-          get '/api/v1/items/find_all?min_price=-2'
 
           items = JSON.parse(response.body, symbolize_names: true)
 
