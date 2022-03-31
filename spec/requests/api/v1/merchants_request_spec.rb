@@ -104,8 +104,15 @@ describe 'Merchants API' do
       expect(response).to have_http_status(404)
     end
     
-    xit 'returns a 404 error is string passed as ID' do 
-     
+    it 'returns a 404 error is string passed as ID' do 
+      id = create(:merchant).id
+      id2 = create(:merchant).id
+
+      get "/api/v1/merchants/'string'"
+
+      merchant = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response).to have_http_status(404)
     end
   end
 
