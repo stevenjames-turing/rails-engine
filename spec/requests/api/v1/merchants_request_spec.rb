@@ -86,6 +86,19 @@ describe 'Merchants API' do
 
         expect(merchants[:data].count).to eq(20)
       end
+
+      it 'returns the number of objects passed in params' do 
+        create_list(:merchant, 50)
+
+        get '/api/v1/merchants?per_page=35'
+
+        expect(response).to be_successful
+
+        merchants = JSON.parse(response.body, symbolize_names: true)
+        expect(merchants[:data]).to be_an Array
+
+        expect(merchants[:data].count).to eq(35)
+      end
     end 
   end
 
