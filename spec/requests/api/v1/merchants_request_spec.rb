@@ -224,8 +224,15 @@ describe 'Merchants API' do
         expect(merchants[:data][:attributes][:name]).to eq('Knob Creek')
       end
 
-      xit 'does not return anything if no fragment matches' do 
-        
+      it 'does not return anything if no fragment matches' do 
+        merchant1 = create(:merchant, name: "Schitt's Creek")
+        merchant2 = create(:merchant, name: 'Knob Creek')
+
+        get '/api/v1/merchants/find?name=col'
+
+        merchants = JSON.parse(response.body, symbolize_names: true)
+
+        expect(merchants[:data][:message]).to eq("No matching merchant")
       end
 
       xit 'should return an error if search param is missing' do 
