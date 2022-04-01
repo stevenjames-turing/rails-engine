@@ -21,13 +21,14 @@ class Item < ApplicationRecord
   end
 
   def self.search_items(data, count = nil)
-    if data[0] == "name"
+    case data[0]
+    when "name"
       Item.search_by_name(data[1], count)
-    elsif data[0] == "between"
+    when "between"
       Item.search_between_price(data[1], data[2], count)
-    elsif data[0] == "min"
+    when "min"
       Item.search_min_price(data[1], count)
-    elsif data[0] == "max"
+    when "max"
       Item.search_max_price(data[1], count)
     end
   end
