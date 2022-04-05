@@ -11,4 +11,14 @@ class Api::V1::RevenueController < ApplicationController
       json_response({ "error": [] }, :bad_request)
     end
   end
+
+  def unshipped
+    if params[:quantity].to_i > 0
+      json_response(InvoiceUnshippedOrderSerializer.new(Invoice.unshipped_revenue(params[:quantity])))
+    elsif !params[:quantity]
+      json_response(InvoiceUnshippedOrderSerializer.new(Invoice.unshipped_revenue(10)))
+    else 
+      json_response({ "error": [] }, :bad_request)
+    end
+  end
 end 
