@@ -13,6 +13,10 @@ Rails.application.routes.draw do
       resources :items, only: %i[index show create update destroy] do
         resources :merchant, controller: 'merchant_items', only: [:index]
       end
+      namespace :revenue do 
+        resources :merchants, only: [:index, :show]
+        resources :items, only: [:index]
+      end
     end
   end
 end
