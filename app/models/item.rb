@@ -10,6 +10,7 @@ class Item < ApplicationRecord
   # Model Relationships
   has_many :invoice_items, dependent: :destroy
   has_many :invoices, through: :invoice_items
+  has_many :transactions, through: :invoices
   belongs_to :merchant
 
   def valid_invoice?
@@ -31,5 +32,15 @@ class Item < ApplicationRecord
     when "max"
       Item.search_max_price(data[1], count)
     end
+  end
+
+  def self.top_items_by_revenue(number)
+    Item
+      .joins(invoice_items: [invoice: :transactions])
+      .where(transactions: { result: 'success' }, invoices: { status: 'shipped' })
+      .group('items.id')
+      .select("items.*, SUM(invoice_items.quantity * invoice_items.unit_price) as total_revenue")
+      .order('total_revenue DESC')
+      .limit(number)
   end
 end
