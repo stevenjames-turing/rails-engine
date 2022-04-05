@@ -1,4 +1,5 @@
 class Api::V1::Revenue::MerchantsController < ApplicationController
+  before_action :find_merchant, only: [:show]
 
   def index
     if params[:quantity]
@@ -7,5 +8,14 @@ class Api::V1::Revenue::MerchantsController < ApplicationController
       json_response({ "error": [] }, :bad_request)
     end
   end
+
+  def show
+    json_response(MerchantRevenueSerializer.new(Merchant.total_revenue(@merchant.id)[0]))
+  end
   
+  private
+
+    def find_merchant
+      @merchant = Merchant.find(params[:id])
+    end
 end 
