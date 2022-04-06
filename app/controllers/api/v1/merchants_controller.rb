@@ -35,6 +35,14 @@ class Api::V1::MerchantsController < ApplicationController
     end
   end
 
+  def most_items
+    if params[:quantity]
+      json_response(MerchantNameCountSerializer.new(Merchant.top_merchants_by_items_sold(params[:quantity])))
+    else 
+      json_response({ "error": [] }, :bad_request)
+    end
+  end
+
   private
 
   def find_merchant

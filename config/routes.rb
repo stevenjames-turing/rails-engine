@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       get 'merchants/find', to: 'merchants#find'
       get 'merchants/find_all', to: 'merchants#find_all'
+      get 'merchants/most_items', to: 'merchants#most_items'
       resources :merchants, only: %i[index show] do
         resources :items, controller: 'merchant_items', only: [:index]
       end
@@ -13,6 +14,13 @@ Rails.application.routes.draw do
       resources :items, only: %i[index show create update destroy] do
         resources :merchant, controller: 'merchant_items', only: [:index]
       end
+      namespace :revenue do 
+        resources :merchants, only: [:index, :show]
+        resources :items, only: [:index]
+      end
+      get 'revenue/unshipped', to: 'revenue#unshipped'
+      get 'revenue/weekly', to: 'revenue#weekly'
+      resources :revenue, only: [:index]
     end
   end
 end
