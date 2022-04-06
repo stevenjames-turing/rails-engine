@@ -4,7 +4,7 @@ class Api::V1::RevenueController < ApplicationController
     if params[:start] != nil && params[:start] != ""
       if params[:end] != nil && params[:end] != ""
         if params[:start] <= params[:end]
-          json_response(RevenueSerializer.new(InvoiceItem.total_revenue_within_range(params[:start], params[:end])[0]))
+          json_response(RevenueSerializer.new(Merchant.total_revenue_between_dates(params[:start], params[:end])[0]))
         else 
           json_response({ "error": [] }, :bad_request)
         end

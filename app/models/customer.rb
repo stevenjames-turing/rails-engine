@@ -5,6 +5,5 @@ class Customer < ApplicationRecord
 
   # Model Relationships
   has_many :invoices
-  has_many :merchants, through: :invoices
   has_many :transactions, through: :invoices
 end
