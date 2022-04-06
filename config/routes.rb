@@ -19,6 +19,7 @@ Rails.application.routes.draw do
         resources :items, only: [:index]
       end
       get 'revenue/unshipped', to: 'revenue#unshipped'
+      get 'revenue/weekly', to: 'revenue#weekly'
       resources :revenue, only: [:index]
     end
   end

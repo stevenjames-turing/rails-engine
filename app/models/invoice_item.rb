@@ -11,8 +11,9 @@ class InvoiceItem < ApplicationRecord
 
   def self.total_revenue_within_range(start_date, end_date)
     InvoiceItem
-      .where("invoice_items.created_at between #{Date.strptime(start_date, '%Y-%m-%d')} and #{Date.strptime(end_date, '%Y-%m-%d')}")
-      .select("invoice_items.*, SUM(invoice_items.quantity * invoice_items.unit_price) as total_revenue")
+      .joins(invoice: [:transactions] )
+      .where(transactions: { result: 'success' }, invoices: { status: 'shipped' }, invoice_items: { created_at: [start_date..end_date] })
+      .select("SUM(invoice_items.quantity * invoice_items.unit_price) as total_revenue")
       .order('total_revenue DESC')
   end
 end
