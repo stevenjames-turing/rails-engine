@@ -39,4 +39,15 @@ class Merchant < ApplicationRecord
     .select("merchants.*, SUM(invoice_items.quantity * invoice_items.unit_price) as total_revenue")
   end
 
+  def self.total_revenue_between_dates(start_date, end_date)
+    start_date = start_date.to_datetime.beginning_of_day
+    end_date = end_date.to_datetime.end_of_day
+    
+    Merchant
+      .joins(invoices: [:invoice_items, :transactions])
+      .where(transactions: { result: 'success' }, invoices: { status: 'shipped', created_at: [start_date..end_date] })
+      .select("SUM(invoice_items.quantity * invoice_items.unit_price) as total_revenue")
+      .order('total_revenue DESC')
+  end
+
 end
