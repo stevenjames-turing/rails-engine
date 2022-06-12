@@ -254,6 +254,7 @@ describe 'Items API' do
 
       expect(data.keys).to eq([:error])
       expect(data[:error].keys).to eq([:message])
+      expect(data[:error][:message]).to eq('Error, invalid input.')
     end
 
     it 'ignores any attributes sent by user that are not allowed' do
