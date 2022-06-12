@@ -253,6 +253,7 @@ describe 'Items API' do
       data = JSON.parse(response.body, symbolize_names: true)
 
       expect(data.keys).to eq([:error])
+      expect(data[:error].keys).to eq([:message])
     end
 
     it 'ignores any attributes sent by user that are not allowed' do
