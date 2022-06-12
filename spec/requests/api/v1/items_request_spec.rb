@@ -249,7 +249,9 @@ describe 'Items API' do
       post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
 
       expect(response.body).to eq('Error, invalid input.')
-      expect(response).to be_successful
+      expect(response).to_not be_successful
+      expect(response).to have_http_status(400)
+
     end
 
     it 'ignores any attributes sent by user that are not allowed' do
