@@ -16,7 +16,7 @@ class Api::V1::ItemsController < ApplicationController
     if item.save
       json_response(ItemSerializer.new(item), :created)
     else
-      json_response('Error, invalid input.', :bad_request)
+      json_response({ "error": {message: 'Error, invalid input.'}}, :bad_request)
     end
   end
 
